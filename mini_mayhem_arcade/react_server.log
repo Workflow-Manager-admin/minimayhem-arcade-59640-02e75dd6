@@ -80,3 +80,70 @@ SyntaxError
  @ ./src/index.js 5:0-24 11:32-35
 
 webpack 5.99.9 compiled with 2 errors in 2060 ms
+assets by status 1.98 KiB [cached] 1 asset
+assets by path *.js 1.99 MiB
+  asset bundle.js 1.97 MiB [emitted] (name: main)
+  asset main.6fca39d2de361cdb4ffd.hot-update.js 16.2 KiB [emitted] [immutable] [hmr] (name: main)
+asset main.6fca39d2de361cdb4ffd.hot-update.json 28 bytes [emitted] [immutable] [hmr]
+Entrypoint main 1.99 MiB = bundle.js 1.97 MiB main.6fca39d2de361cdb4ffd.hot-update.js 16.2 KiB
+cached modules 1.74 MiB [cached] 54 modules
+runtime modules 28.7 KiB 15 modules
+javascript modules 12.2 KiB
+  modules by path ./src/*.js 3.79 KiB
+    ./src/App.js 3.75 KiB [code generated]
+    ./src/LandingPage.js 39 bytes [built] [1 error]
+  modules by path ./src/*.css 8.45 KiB
+    ./src/App.css 2.22 KiB [code generated]
+    ./node_modules/css-loader/dist/cjs.js!./src/App.css 6.23 KiB [built] [code generated]
+
+ERROR in ./src/LandingPage.js
+Module build failed (from ./node_modules/babel-loader/lib/index.js):
+SyntaxError: /home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/src/LandingPage.js: Missing semicolon. (171:34)
+
+  169 | }
+  170 |
+> 171 | export default LandingPage;iimport React, { useEffect, useState, useRef } from "react";
+      |                                   ^
+  172 | import "./App.css";
+  173 |
+  174 | // PUBLIC_INTERFACE
+    at constructor (/home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/node_modules/@babel/parser/lib/index.js:363:19)
+    at JSXParserMixin.raise (/home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/node_modules/@babel/parser/lib/index.js:6609:19)
+    at JSXParserMixin.semicolon (/home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/node_modules/@babel/parser/lib/index.js:6906:10)
+    at JSXParserMixin.parseExpressionStatement (/home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/node_modules/@babel/parser/lib/index.js:13204:10)
+    at JSXParserMixin.parseStatementContent (/home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/node_modules/@babel/parser/lib/index.js:12818:19)
+    at JSXParserMixin.parseStatementLike (/home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/node_modules/@babel/parser/lib/index.js:12685:17)
+    at JSXParserMixin.parseModuleItem (/home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/node_modules/@babel/parser/lib/index.js:12662:17)
+    at JSXParserMixin.parseBlockOrModuleBlockBody (/home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/node_modules/@babel/parser/lib/index.js:13235:36)
+    at JSXParserMixin.parseBlockBody (/home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/node_modules/@babel/parser/lib/index.js:13228:10)
+    at JSXParserMixin.parseProgram (/home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/node_modules/@babel/parser/lib/index.js:12541:10)
+    at JSXParserMixin.parseTopLevel (/home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/node_modules/@babel/parser/lib/index.js:12531:25)
+    at JSXParserMixin.parse (/home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/node_modules/@babel/parser/lib/index.js:14410:10)
+    at parse (/home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/node_modules/@babel/parser/lib/index.js:14444:38)
+    at parser (/home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/node_modules/@babel/core/lib/parser/index.js:41:34)
+    at parser.next (<anonymous>)
+    at normalizeFile (/home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/node_modules/@babel/core/lib/transformation/normalize-file.js:64:37)
+    at normalizeFile.next (<anonymous>)
+    at run (/home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/node_modules/@babel/core/lib/transformation/index.js:22:50)
+    at run.next (<anonymous>)
+    at transform (/home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/node_modules/@babel/core/lib/transform.js:22:33)
+    at transform.next (<anonymous>)
+    at step (/home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/node_modules/gensync/index.js:261:32)
+    at /home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/node_modules/gensync/index.js:273:13
+    at async.call.result.err.err (/home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/node_modules/gensync/index.js:223:11)
+ @ ./src/App.js 4:0-40 38:37-48
+ @ ./src/index.js 5:0-24 11:32-35
+
+webpack 5.99.9 compiled with 1 error in 242 ms
+assets by status 1.98 KiB [cached] 1 asset
+assets by path *.js 1.99 MiB
+  asset bundle.js 1.98 MiB [emitted] (name: main)
+  asset main.f0d39385a1e0d27e78c4.hot-update.js 16.6 KiB [emitted] [immutable] [hmr] (name: main)
+asset main.f0d39385a1e0d27e78c4.hot-update.json 28 bytes [emitted] [immutable] [hmr]
+Entrypoint main 1.99 MiB = bundle.js 1.98 MiB main.f0d39385a1e0d27e78c4.hot-update.js 16.6 KiB
+cached modules 1.75 MiB [cached] 56 modules
+runtime modules 28.7 KiB 15 modules
+javascript modules 8.42 KiB
+  ./src/App.js 3.75 KiB [code generated]
+  ./src/LandingPage.js 4.67 KiB [built] [code generated]
+webpack 5.99.9 compiled successfully in 99 ms
