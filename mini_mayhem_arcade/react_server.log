@@ -11,8 +11,8 @@ asset bundle.js 1.82 MiB [emitted] (name: main)
 asset index.html 1.98 KiB [emitted]
 runtime modules 28.7 KiB 15 modules
 modules by path ./node_modules/ 1.54 MiB 34 modules
-modules by path ./src/ 88.8 KiB
-  modules by path ./src/*.js 81.3 KiB 6 modules
+modules by path ./src/ 91.1 KiB
+  modules by path ./src/*.js 83.7 KiB 6 modules
   modules by path ./src/*.css 7.49 KiB
     ./src/index.css 2.23 KiB [built] [code generated]
     + 3 modules
@@ -22,44 +22,4 @@ modules by path ./.ve/ 15.1 KiB
     ./.ve/EditorOverlay.css 2.25 KiB [built] [code generated]
     ./node_modules/css-loader/dist/cjs.js!./.ve/EditorOverlay.css 697 bytes [built] [code generated]
   ./.ve/EditorOverlay.jsx 1.58 KiB [built] [code generated]
-webpack 5.99.9 compiled successfully in 1492 ms
-assets by status 1.98 KiB [cached] 1 asset
-assets by path *.js 1.85 MiB
-  asset bundle.js 1.82 MiB [emitted] (name: main)
-  asset main.3897948f683f22bc5310.hot-update.js 29.3 KiB [emitted] [immutable] [hmr] (name: main)
-asset main.3897948f683f22bc5310.hot-update.json 28 bytes [emitted] [immutable] [hmr]
-Entrypoint main 1.85 MiB = bundle.js 1.82 MiB main.3897948f683f22bc5310.hot-update.js 29.3 KiB
-cached modules 1.62 MiB [cached] 48 modules
-runtime modules 28.7 KiB 15 modules
-./src/BlockPuzzleGame.js 24.2 KiB [built] [code generated]
-webpack 5.99.9 compiled successfully in 104 ms
-assets by status 1.98 KiB [cached] 1 asset
-assets by path *.js 1.85 MiB
-  asset bundle.js 1.82 MiB [emitted] (name: main)
-  asset main.68d98e28239f5527cf89.hot-update.js 29.7 KiB [emitted] [immutable] [hmr] (name: main)
-asset main.68d98e28239f5527cf89.hot-update.json 28 bytes [emitted] [immutable] [hmr]
-Entrypoint main 1.85 MiB = bundle.js 1.82 MiB main.68d98e28239f5527cf89.hot-update.js 29.7 KiB
-cached modules 1.62 MiB [cached] 48 modules
-runtime modules 28.7 KiB 15 modules
-./src/BlockPuzzleGame.js 24.6 KiB [built] [code generated]
-webpack 5.99.9 compiled successfully in 152 ms
-assets by status 1.98 KiB [cached] 1 asset
-assets by path *.js 1.85 MiB
-  asset bundle.js 1.82 MiB [emitted] (name: main)
-  asset main.2ce058f8ea36ce8aa6bd.hot-update.js 30 KiB [emitted] [immutable] [hmr] (name: main)
-asset main.2ce058f8ea36ce8aa6bd.hot-update.json 28 bytes [emitted] [immutable] [hmr]
-Entrypoint main 1.85 MiB = bundle.js 1.82 MiB main.2ce058f8ea36ce8aa6bd.hot-update.js 30 KiB
-cached modules 1.62 MiB [cached] 48 modules
-runtime modules 28.7 KiB 15 modules
-./src/BlockPuzzleGame.js 24.9 KiB [built] [code generated]
-webpack 5.99.9 compiled successfully in 126 ms
-assets by status 1.98 KiB [cached] 1 asset
-assets by path *.js 1.85 MiB
-  asset bundle.js 1.82 MiB [emitted] (name: main)
-  asset main.d39267c2752738451993.hot-update.js 30.6 KiB [emitted] [immutable] [hmr] (name: main)
-asset main.d39267c2752738451993.hot-update.json 28 bytes [emitted] [immutable] [hmr]
-Entrypoint main 1.85 MiB = bundle.js 1.82 MiB main.d39267c2752738451993.hot-update.js 30.6 KiB
-cached modules 1.62 MiB [cached] 48 modules
-runtime modules 28.7 KiB 15 modules
-./src/BlockPuzzleGame.js 25.5 KiB [built] [code generated]
-webpack 5.99.9 compiled successfully in 122 ms
+webpack 5.99.9 compiled successfully in 1459 ms
