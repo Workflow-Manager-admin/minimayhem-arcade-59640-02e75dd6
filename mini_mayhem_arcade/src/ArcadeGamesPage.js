@@ -1,95 +1,139 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-// PUBLIC_INTERFACE
 /**
- * ArcadeGamesPage displays the collection of mini games as clickable cards.
- * Each card should link to its corresponding game route.
+ * ArcadeGamesPage displays all available mini games as cards.
+ * Cards link to their respective game pages.
  */
-function GamesPage() {
-  // Updated routes for each game as per provided mapping.
-  const games = [
-    {
-      name: "Memory Match",
-      to: "/games/memory-match",
-      desc: "Challenge your memory by matching pairs!",
-      emoji: "🃏",
-      color: "linear-gradient(91deg, #0093E9 0%, #80D0C7 100%)",
-    },
-    {
-      name: "Memory Puzzle",
-      to: "/games/memory-puzzle",
-      desc: "Flip and remember tile positions!",
-      emoji: "🧩",
-      color: "linear-gradient(87deg, #ee9ca7 0%, #ffdde1 100%)",
-    },
-    {
-      name: "Reaction Speed",
-      to: "/games/reaction-speed",
-      desc: "Test your reflexes and reaction time.",
-      emoji: "⚡",
-      color: "linear-gradient(98deg,#F7971E 0%,#FFD200 100%)",
-    },
-    {
-      name: "Word Typing",
-      to: "/games/word-typing",
-      desc: "Type words quickly and accurately!",
-      emoji: "⌨️",
-      color: "linear-gradient(91deg, #834d9b 0%, #d04ed6 100%)",
-    },
-    {
-      name: "Sudoku",
-      to: "/games/sudoku",
-      desc: "Solve the grid using logic and numbers.",
-      emoji: "🔢",
-      color: "linear-gradient(120deg,#00c6fb 0%,#005bea 100%)",
-    },
-    {
-      name: "Sliding Puzzle",
-      to: "/games/sliding-puzzle",
-      desc: "Arrange tiles to complete the picture.",
-      emoji: "🧊",
-      color: "linear-gradient(87deg,#43cea2 0%,#185a9d 100%)",
-    },
-  ];
+const games = [
+  {
+    emoji: "🧱",
+    title: "Block Puzzle",
+    to: "/games/block-puzzle",
+    description: "Drag blocks to fill the board. Simple but addicting!",
+  },
+  {
+    emoji: "🧩",
+    title: "Sliding Tile Puzzle",
+    to: "/games/sliding-puzzle",
+    description: "Rearrange tiles to solve the puzzle!",
+  },
+  {
+    emoji: "🅰️",
+    title: "Word Typing",
+    to: "/games/word-typing",
+    description: "Test your typing speed with fun words and races.",
+  },
+  {
+    emoji: "⏱️",
+    title: "Reaction Speed",
+    to: "/games/reaction-speed",
+    description: "How fast can you react? Find out in this reflex game.",
+  },
+  {
+    emoji: "🧠",
+    title: "Memory Puzzle",
+    to: "/games/memory-puzzle",
+    description: "Remember and match cards to train your brain.",
+  },
+  {
+    emoji: "🔢",
+    title: "Sudoku",
+    to: "/games/sudoku",
+    description: "Classic number puzzle. Fill every row, column, and box.",
+  },
+];
 
+function ArcadeGamesPage() {
   return (
-    <div className="container" style={{ paddingTop: 80, paddingBottom: 40 }}>
-      <h1 className="title" style={{ marginBottom: 20 }}>MiniMayhem Arcade</h1>
-      <p className="subtitle" style={{ marginBottom: 38 }}>
-        Choose your challenge—classic puzzles, speed tests, word games and more!
+    <div className="container" style={{ paddingTop: 100 }}>
+      <h1 style={{ fontSize: "2.8rem", fontWeight: 700, marginBottom: 10 }}>
+        🎲 Games Library
+      </h1>
+      <p className="description" style={{ marginBottom: 40 }}>
+        Explore and play our hand-crafted mini games 🥳.<br />
+        Have fun and try to beat your high scores!
       </p>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 32, justifyContent: "center" }}>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit,minmax(240px,1fr))",
+          gap: 38,
+          marginBottom: 60,
+        }}
+      >
         {games.map((game) => (
           <Link
-            key={game.name}
+            key={game.to}
             to={game.to}
             style={{
-              textDecoration: "none",
-              minWidth: 210,
-              maxWidth: 260,
-              width: "100%",
-              background: game.color,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              background: "linear-gradient(135deg, #222348 0%, #2b86c5 100%)",
               borderRadius: 16,
-              padding: "28px 18px 23px",
-              boxShadow: "0 4px 28px 1px #0a254133, 0 1.5px 0px #fff8 inset",
-              transition: "transform 0.14s, box-shadow 0.17s",
-              color: "#fff",
-              textAlign: "center",
-              fontWeight: 600,
-              fontSize: 22,
-              transform: "scale(1)",
+              padding: "32px 8px 24px 8px",
+              textDecoration: "none",
+              color: "inherit",
+              boxShadow: "0 4px 24px 0 #0007",
+              minHeight: 210,
+              transition: "transform 0.14s",
+              outline: "none",
+              border: "2.5px solid rgba(255,255,255,0.09)",
+              position: "relative",
             }}
             className="game-card"
-            onMouseDown={e => (e.currentTarget.style.transform = "scale(0.97)")}
-            onMouseUp={e => (e.currentTarget.style.transform = "scale(1)")}
-            onMouseLeave={e => (e.currentTarget.style.transform = "scale(1)")}
+            tabIndex={0}
           >
-            <div style={{ fontSize: 48, marginBottom: 9 }}>{game.emoji}</div>
-            <div style={{ fontWeight: 900, fontSize: 22 }}>{game.name}</div>
-            <div style={{ fontSize: 14, marginTop: 7, color: "#fff9", fontWeight: 400 }}>
-              {game.desc}
+            <span
+              style={{
+                fontSize: 42,
+                marginBottom: 8,
+                filter: "drop-shadow(0 2px 8px #22f5)"
+              }}
+              aria-label={game.title}
+              role="img"
+            >
+              {game.emoji}
+            </span>
+            <div
+              style={{
+                fontWeight: 700,
+                color: "#FFCB05",
+                fontSize: 22,
+                marginBottom: 9,
+                letterSpacing: 0.25,
+                textShadow: "0 0 6px #fff5, 0 2px 8px #b8f8ff33",
+                textAlign: "center"
+              }}
+            >
+              {game.title}
             </div>
+            <div
+              style={{
+                fontSize: 15,
+                color: "#fff",
+                opacity: 0.87,
+                marginBottom: 4,
+                minHeight: 35,
+                textAlign: "center"
+              }}
+            >
+              {game.description}
+            </div>
+            <span
+              style={{
+                position: "absolute",
+                bottom: 18,
+                right: 22,
+                color: "#85fff7",
+                fontSize: 16,
+                opacity: 0.6
+              }}
+              aria-hidden="true"
+            >
+              Play →
+            </span>
           </Link>
         ))}
       </div>
@@ -97,4 +141,4 @@ function GamesPage() {
   );
 }
 
-export default GamesPage;
+export default ArcadeGamesPage;
