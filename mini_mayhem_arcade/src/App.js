@@ -3,7 +3,7 @@ import './App.css';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import LandingPage from './LandingPage';
 import GamesPage from './ArcadeGamesPage';
-import Navbar from './Navbar';
+import ArcadeNavBar from './ArcadeNavBar';
 import BlockPuzzleGame from './BlockPuzzleGame';
 import MemoryMatchGame from './MemoryMatchGame';
 import MemoryPuzzleGame from './MemoryPuzzleGame';
@@ -23,7 +23,7 @@ function App() {
   return (
     <BrowserRouter>
       <div className="app">
-        <Navbar />
+        <ArcadeNavBar />
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/games" element={<GamesPage />} />
