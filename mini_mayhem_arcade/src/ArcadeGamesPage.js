@@ -1,653 +1,913 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
-// GOOGLE FONTS IMPORT (Orbitron & Press Start 2P)
-const ArcadeFonts = () => (
-  <style>{`
-    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Orbitron:wght@700&display=swap');
-    .arcade-font-orbitron {
-      font-family: 'Orbitron', 'Arial', sans-serif !important;
-      letter-spacing: 2px;
-    }
-    .arcade-font-pressstart {
-      font-family: 'Press Start 2P', 'Orbitron', 'monospace' !important;
-      letter-spacing: 1.6px;
-    }
-  `}</style>
-);
+// Font import (Orbitron & Press Start 2P), one-time style injection for arcade look
+const fontUrl =
+  "https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Press+Start+2P&display=swap";
+if (!document.getElementById("arcade-font-import")) {
+  const link = document.createElement("link");
+  link.id = "arcade-font-import";
+  link.rel = "stylesheet";
+  link.href = fontUrl;
+  document.head.appendChild(link);
+}
 
+// --- Game list definition ---
 const GAMES = [
   {
     title: "Block Puzzle",
+    emoji: "🔲",
     route: "/games/block-puzzle",
-    emoji: "🧱",
-    color: "#39A0ED",
-    storageKey: "BlockPuzzle-lastScore",
+    color: "linear-gradient(120deg, #00ffe7 0%, #7f78eb 100%)",
+    storageKey: "score-block-puzzle",
+    desc: "Fit them all!"
   },
   {
     title: "Memory Match",
-    route: "/games/memory-match",
     emoji: "🧠",
-    color: "#FF8C00",
-    storageKey: "MemoryMatch-lastScore",
+    route: "/games/memory-match",
+    color: "linear-gradient(120deg, #ffdf6e 0%, #ff47ff 87%)",
+    storageKey: "score-memory-match",
+    desc: "Remember them all!"
   },
   {
     title: "Reaction Speed",
-    route: "/games/reaction-speed",
     emoji: "⚡",
-    color: "#F50057",
-    storageKey: "ReactionSpeed-lastScore",
-  },
-  {
-    title: "Sliding Puzzle",
-    route: "/games/sliding-puzzle",
-    emoji: "🧩",
-    color: "#00E396",
-    storageKey: "SlidingPuzzle-lastScore",
-  },
-  {
-    title: "Sudoku",
-    route: "/games/sudoku",
-    emoji: "🧮",
-    color: "#FFEB3B",
-    storageKey: "Sudoku-lastScore",
+    route: "/games/reaction-speed",
+    color: "linear-gradient(120deg, #ff2f2f 0%, #ffc93c 100%)",
+    storageKey: "score-reaction-speed",
+    desc: "Tap in time!"
   },
   {
     title: "Word Typing",
-    route: "/games/word-typing",
     emoji: "⌨️",
-    color: "#AA00FF",
-    storageKey: "WordTyping-lastScore",
+    route: "/games/word-typing",
+    color: "linear-gradient(120deg, #48ff74 0%, #18b4ff 100%)",
+    storageKey: "score-word-typing",
+    desc: "Type fast!"
   },
+  {
+    title: "Sudoku",
+    emoji: "🧩",
+    route: "/games/sudoku",
+    color: "linear-gradient(120deg, #fdc741 0%, #ff6486 100%)",
+    storageKey: "score-sudoku",
+    desc: "Solve the grid!"
+  },
+  {
+    title: "Sliding Puzzle",
+    emoji: "🔀",
+    route: "/games/sliding-puzzle",
+    color: "linear-gradient(140deg, #38f9d7 6%, #f1e215 75%, #ff2a68 100%)",
+    storageKey: "score-sliding-puzzle",
+    desc: "Slide to win!"
+  }
 ];
 
-// Custom neon/glassmorphic style palette
-const COLORS = {
-  glassBg: "rgba(18, 34, 49, 0.84)",
-  glassBorder: "2.5px solid rgba(255,255,255,0.23)",
-  cardShadow: "0 8px 26px 4px #00f2fe44, 0 1.5px 10px #3900fd66",
-  neonGlow: "0 0 20px #fff, 0 2px 40px #49ffff88, 0 0 4px #fff9",
-  focusOutline: "0 0 0 3px #21ffff, 0 0 16px 2px #1ce8fb44",
-  btnArcade: `
-    0 0 12px 1px #2fffdfbb,
-    0 2px 16px #007cfb88,
-    0 0 18px #fff8,
-    0 1.8px 20px #2bfffa44
-  `,
-  badge: `
-    linear-gradient(96deg,#17FFE2 0%,#28C2FF 100%),
-    rgba(255,255,255,0.9)
-  `,
+// Arcade glassmorphism and neon shadow helpers
+const glassCard =
+  "backdrop-filter: blur(12px); background:rgba(28,36,54,0.62); box-shadow:0 0 20px #13e7ff88,0 4px 30px #5500ff38; border:2.4px solid rgba(255,255,255,0.19); border-radius: 18px;";
+const arcadeText =
+  "'Press Start 2P', 'Orbitron', 'Arial Black', 'Arial', sans-serif";
+
+// Arcade arcade 3D/pulse button style (dynamically modifiable)
+const arcadeBtnStyle = {
+  fontFamily: arcadeText,
+  padding: "14px 28px",
+  background: "linear-gradient(90deg,#00e1ffc7,#ff3aceb7)",
+  color: "#fff",
+  border: "3px solid #73fff2cc",
+  borderRadius: "9px",
+  boxShadow:
+    "0 2px 30px 0 #0ffad770, 0 4px 22px #ff2ef080, 0 0 16px #73fff277",
+  fontSize: "1.22rem",
+  fontWeight: 900,
+  outline: "none",
+  cursor: "pointer",
+  position: "relative",
+  transition:
+    "transform 0.19s cubic-bezier(.25,2,.6,.97), box-shadow 0.21s, background 0.14s",
+  textShadow: "0 2px 9px #f3c8ff70, 0 5px 24px #1de7e9cc, 0 1.5px 0 #000",
+  margin: "0.5rem 0",
+  letterSpacing: "1.3px",
+  zIndex: 1
 };
 
-// PUBLIC_INTERFACE
+const extraArcadeBtnPress = {
+  transform: "scale(0.92) translateY(1.5px)",
+  boxShadow: "0 0 22px #fcffc660,0 1.5px 8px #1cffd680"
+};
+
+// Keyboard focus ring for accessibility
+const focusRing = {
+  boxShadow: "0 0 0 3px #fffd856b,0 0 18px 8px #00ffe588"
+};
+
+// --- Fun Zone APIs ---
+const FUN_ZONE_APIS = [
+  {
+    id: "joke",
+    title: "JokeAPI",
+    endpoint: "https://v2.jokeapi.dev/joke/Any?blacklistFlags=sexist,explicit",
+    color: "linear-gradient(110deg,#fff77e 0%,#ff2ea9 97%)",
+    emoji: "🤣"
+  },
+  {
+    id: "quote",
+    title: "QuotableAPI",
+    endpoint: "https://api.quotable.io/random",
+    color: "linear-gradient(110deg,#84ffda 0%,#3d7aff 97%)",
+    emoji: "📢"
+  },
+  {
+    id: "number",
+    title: "NumbersAPI",
+    endpoint: "https://api.mathjs.org/v4/?expr=randomInt(1,10000)",
+    color: "linear-gradient(110deg,#ffe47c 0%,#ff3b3b 97%)",
+    emoji: "🔢"
+  }
+];
+
+// --- Glass effect and neon/particle animated helpers ---
+const glassify = {
+  backdropFilter: "blur(14px)",
+  background: "rgba(40,60,97,0.50)",
+  border: "2.4px solid rgba(255,255,255,0.22)",
+  borderRadius: "18px",
+  boxShadow:
+    "0 0 20px #0ffaf877,0 10px 28px #6f36eb51,0 0 8px #f7c23e38",
+  overflow: "hidden"
+};
+
+const neonGlow = {
+  textShadow:
+    "0 2px 12px #08fff9d7,0 0 18px #00fff5cc, 0 4px 34px #f713ff55"
+};
+
+// Utility to get last score
+function getLastScore(key) {
+  // Only allow string/numeric values for badges.
+  try {
+    let value = window.localStorage.getItem(key);
+    if (value && value.length > 12) value = value.slice(0, 9) + "…";
+    return value;
+  } catch {
+    return undefined;
+  }
+}
+
+// Accessible random int
+function getRandomInt(n) {
+  return Math.floor(Math.random() * n);
+}
+
+// --- Fun Zone: fetchers ---
+const fetchFunZone = {
+  joke: async () => {
+    const resp = await fetch(FUN_ZONE_APIS[0].endpoint);
+    if (!resp.ok) return "Could not fetch joke.";
+    const data = await resp.json();
+    if (data.type === "single") return data.joke;
+    if (data.type === "twopart") return data.setup + " " + data.delivery;
+    return "No joke found.";
+  },
+  quote: async () => {
+    const resp = await fetch(FUN_ZONE_APIS[1].endpoint);
+    if (!resp.ok) return "Could not fetch quote.";
+    const data = await resp.json();
+    return `"${data.content}" — ${data.author}`;
+  },
+  number: async () => {
+    const num = await fetch(FUN_ZONE_APIS[2].endpoint).then((r) => r.text());
+    // use NumbersAPI text fact
+    const resp = await fetch(
+      `https://numbersapi.com/${parseInt(num, 10)}/trivia`
+    );
+    if (!resp.ok) return "Could not fetch trivia.";
+    return await resp.text();
+  }
+};
+
+// --- Arcade Game Card Component ---
+function ArcadeGameCard({
+  game,
+  tabIndex,
+  onPlayClick,
+  isFocused,
+  onMouseOver,
+  onMouseOut
+}) {
+  const lastScore = getLastScore(game.storageKey);
+
+  return (
+    <div
+      role="group"
+      tabIndex={tabIndex}
+      aria-label={game.title + (lastScore ? ", last score " + lastScore : "")}
+      onKeyDown={(e) => {
+        // Allow Enter or Space to trigger the Play Now button when card is focused
+        if (
+          (e.key === "Enter" || e.key === " ") &&
+          !e.altKey &&
+          !e.ctrlKey &&
+          !e.shiftKey
+        ) {
+          onPlayClick();
+        }
+      }}
+      onMouseOver={onMouseOver}
+      onMouseOut={onMouseOut}
+      style={{
+        ...glassify,
+        background: game.color,
+        minHeight: 166,
+        boxShadow:
+          "0 4px 24px " +
+          (isFocused ? "#fffad5" : "#13e7ff70") +
+          ",0 0 16px #" +
+          (isFocused ? "ff349cbb" : "13e7ffdd"),
+        outline: isFocused ? "none" : undefined,
+        border:
+          "2.5px solid " +
+          (isFocused
+            ? "rgba(255,255,140,0.52)"
+            : "rgba(255,255,255,0.18)"),
+        transition: "box-shadow 0.21s, border 0.19s, background 0.22s"
+      }}
+      className="arcade-grid-card"
+    >
+      <div
+        style={{
+          fontSize: 42,
+          textAlign: "center",
+          marginTop: 12,
+          filter: "drop-shadow(0 0 3px #fff)",
+          lineHeight: 1
+        }}
+        aria-hidden="true"
+      >
+        {game.emoji}
+      </div>
+      <div
+        style={{
+          fontFamily: arcadeText,
+          fontSize: 23,
+          lineHeight: 1.2,
+          margin: "14px 0 5px 0",
+          ...neonGlow,
+          textAlign: "center",
+          letterSpacing: "1.2px"
+        }}
+      >
+        {game.title}
+      </div>
+      <div
+        style={{
+          fontFamily: arcadeText,
+          fontSize: 13,
+          color: "#ffe",
+          opacity: 0.62,
+          textAlign: "center",
+          marginBottom: lastScore ? 2 : 8
+        }}
+      >
+        {game.desc}
+      </div>
+      {lastScore && (
+        <span
+          tabIndex={-1}
+          style={{
+            display: "inline-block",
+            background:
+              "repeating-linear-gradient(90deg,#fffdaf 0px, #ffe35a 17px,#ff5aaf 35px,#ffd98a 50px)",
+            color: "#320055",
+            padding: "2.8px 10px 2.2px 10px",
+            margin: "0 0 8px 0",
+            borderRadius: 7,
+            fontFamily: arcadeText,
+            fontWeight: 900,
+            fontSize: 13,
+            border: "2px solid #fdffea",
+            outline: "1.2px solid #ff379c60",
+            boxShadow: "0 1.7px 7px #fffdea,0 0 0 #0000",
+            textShadow: "0 1px 5px #fff7",
+            letterSpacing: ".7px"
+          }}
+          aria-label={`Last score: ${lastScore}`}
+        >
+          Last Score: {lastScore}
+        </span>
+      )}
+      <button
+        tabIndex={-1}
+        onClick={onPlayClick}
+        style={{
+          ...arcadeBtnStyle,
+          fontSize: "1.07rem",
+          marginTop: "12px",
+          marginBottom: "11px",
+          background: "linear-gradient(110deg,#320055d9,#83faff,#f91dff)",
+          border: "2.2px solid #fff8",
+        }}
+        className="arcade-play-btn"
+        aria-label={"Play " + game.title + " now"}
+        onMouseDown={e =>
+          (e.currentTarget.style.transform =
+            "scale(0.93) translateY(2px)")
+        }
+        onMouseUp={e => (e.currentTarget.style.transform = "")}
+        onMouseLeave={e => (e.currentTarget.style.transform = "")}
+      >
+        <span
+          style={{
+            fontFamily: arcadeText,
+            fontWeight: 900,
+            letterSpacing: "1.1px"
+          }}
+        >
+          ▶ Play Now
+        </span>
+      </button>
+    </div>
+  );
+}
+
+// ---- Surprise Me Button (animated) ----
+function SurpriseMeButton({ gameRoutes, onSurprise }) {
+  // Accessible focus/active/tooltip pulse ring animation
+  const [isDown, setIsDown] = useState(false);
+  const [showTip, setShowTip] = useState(false);
+  // Simple animation: neon border & pulsing
+  const pulseRef = useRef();
+  // Playful emoji animation for button
+  const [wiggle, setWiggle] = useState(false);
+
+  // Tooltip (auto appears on keyboard focus or hover)
+  const tip =
+    "Jump to a random mini game! Try your luck with Surprise Me… 🎲";
+
+  return (
+    <div style={{ margin: "37px 0 41px 0", width: "100%", textAlign: "center" }}>
+      <button
+        type="button"
+        aria-label="Surprise Me: jump to a random mini game"
+        ref={pulseRef}
+        style={{
+          ...arcadeBtnStyle,
+          minWidth: 166,
+          minHeight: 56,
+          boxShadow:
+            "0 0 0 6px #fff9a499,0 5px 30px #f8ff3fd0,0 7px 33px #25cfd866",
+          background: "linear-gradient(85deg, #ffdf5f 28%, #13fdc6 100%)",
+          color: "#370147",
+          fontWeight: 900,
+          fontFamily: arcadeText,
+          fontSize: "1.22rem",
+          letterSpacing: "1.5px",
+          transition:
+            "background 0.22s, box-shadow 0.25s, color 0.21s, transform 0.22s",
+          outline: isDown ? "2.5px solid #48ffe9b7" : "none",
+          position: "relative",
+          animation:
+            "arcade-surprise-wiggle 0.7s " + (wiggle ? "cubic-bezier(.7,.01,.7,2) infinite alternate" : "paused"),
+        }}
+        className="surprise-arcade-btn"
+        tabIndex={0}
+        onClick={() => {
+          setWiggle(true);
+          setTimeout(() => setWiggle(false), 650);
+          setTimeout(() => {
+            onSurprise(getRandomInt(gameRoutes.length));
+          }, 390);
+        }}
+        onFocus={() => setShowTip(true)}
+        onBlur={() => setShowTip(false)}
+        onMouseDown={() => setIsDown(true)}
+        onMouseUp={() => setIsDown(false)}
+        onMouseLeave={() => {
+          setIsDown(false);
+          setShowTip(false);
+        }}
+        onMouseOver={() => setShowTip(true)}
+        onKeyDown={e => {
+          if (e.key === "Enter" || e.key === " ")
+            setIsDown(true);
+        }}
+        onKeyUp={e => {
+          if (e.key === "Enter" || e.key === " ")
+            setIsDown(false);
+        }}
+      >
+        <span role="img" aria-label="dice" style={{
+          fontSize: 28,
+          verticalAlign: "middle",
+          lineHeight: 1,
+          filter: "drop-shadow(0 0 3px #82fdff)",
+          marginRight: 17,
+          animation: wiggle
+            ? "arcade-wiggle-emoji 0.55s cubic-bezier(.44,.01,.97,.93) infinite alternate"
+            : undefined
+        }}>
+          🎲
+        </span>
+        <span
+          style={{
+            fontFamily: arcadeText,
+            fontWeight: 900
+          }}
+        >Surprise Me!</span>
+        {/* Fun tooltip */}
+        <span
+          aria-live="polite"
+          style={{
+            position: "absolute",
+            left: "50%",
+            transform: "translate(-50%,60%)",
+            fontSize: "1rem",
+            padding: "6px 14px",
+            borderRadius: "9px",
+            background:
+              "linear-gradient(87deg,#fffa, #ffe36a 80%,#fd3aee99)",
+            color: "#2f1248",
+            fontFamily: arcadeText,
+            fontWeight: 700,
+            opacity: showTip ? 1 : 0,
+            pointerEvents: "none",
+            zIndex: 50,
+            marginTop: 11,
+            marginBottom: 0,
+            border: "2px solid #fff7",
+            boxShadow: "0 0 0 4px #fff4,0 2px 7px #ffd760",
+            transition: "opacity 0.21s, margin-top 0.19s",
+            transitionDelay: showTip ? "0.10s" : "0s"
+          }}
+        >
+          {tip}
+        </span>
+      </button>
+      {/* Animated arcade keyframes injected */}
+      <style>
+        {`
+        @keyframes arcade-surprise-wiggle {
+          0% { filter: drop-shadow(0 0 0 #0ff7); }
+          32%{ filter: drop-shadow(0 2px 8px #fefe9d); }
+          50% { filter: drop-shadow(0 0 15px #ff7800d8); }
+          100% { filter: drop-shadow(0 0 10px #26eefa); }
+        }
+        @keyframes arcade-wiggle-emoji {
+          38% { transform: translateY(-4px) rotate(-16deg);}
+          77% { transform: translateY(7px) rotate(12deg);}
+        }
+      `}
+      </style>
+    </div>
+  );
+}
+
+// --- Fun Zone: Card / Animation ---
+function FunZoneCard({ api, content, loading, onNext }) {
+  return (
+    <div
+      style={{
+        ...glassify,
+        background: api.color,
+        minHeight: 88,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "flex-start",
+        boxShadow:
+          "0 0 16px #fffacd,0 2px 24px " +
+          (api.id === "joke"
+            ? "#fd00abaa"
+            : api.id === "quote"
+            ? "#05fffccc"
+            : "#ffcc50cc"),
+        border:
+          api.id === "quote"
+            ? "2.7px dashed #3deec5cc"
+            : "2.7px solid #fffcc5cc",
+        transition: "box-shadow 0.20s, border 0.2s"
+      }}
+      aria-live="polite"
+      className="funzone-card"
+      tabIndex={0}
+    >
+      <div
+        aria-hidden="true"
+        style={{
+          fontSize: api.id === "number" ? 37 : 40,
+          marginTop: 9,
+          marginBottom: ".7rem",
+          filter: "drop-shadow(0 0 7px #fff7)",
+          textShadow: "0 1px 3px #fff5"
+        }}
+      >
+        {api.emoji}
+      </div>
+      <div
+        style={{
+          fontFamily: arcadeText,
+          letterSpacing: "1.1px",
+          fontSize: 16,
+          color: "#16447a",
+          fontWeight: 900,
+          textShadow:
+            "0 0 5px #fff6,0 1px 7px #fffd,0 3px 19px #46faf85b"
+        }}
+      >
+        {api.title}
+      </div>
+      <div
+        style={{
+          fontFamily: arcadeText,
+          fontWeight: 500,
+          fontSize: 13,
+          marginTop: 3,
+          color: "#2f2047",
+          opacity: 0.74,
+          textAlign: "center",
+          minHeight: 32
+        }}
+      >
+        {loading ? (
+          <span>
+            <span
+              style={{
+                fontSize: 21,
+                animation:
+                  "funzone-spin 1.1s cubic-bezier(.87,-0.57,.34,2.8) infinite",
+                display: "inline-block"
+              }}
+              aria-label="loading"
+            >💫</span>{" "}
+            Loading…
+          </span>
+        ) : (
+          <span style={{
+            display: 'block',
+            maxWidth: 180,
+            wordBreak: 'break-word'
+          }}>{content}</span>
+        )}
+      </div>
+      <button
+        style={{
+          ...arcadeBtnStyle,
+          background:
+            api.id === "joke"
+              ? "linear-gradient(98deg,#ffe37f,#ff403f)"
+              : api.id === "quote"
+              ? "linear-gradient(98deg,#91fffa,#2b9eff)"
+              : "linear-gradient(90deg,#fffc7f,#ff40ad)",
+          color: "#361606",
+          minWidth: 70,
+          fontSize: 13,
+          fontFamily: arcadeText,
+          marginTop: 12,
+          border:
+            api.id === "quote"
+              ? "2.2px dashed #6fecff"
+              : "2.2px solid #fff6",
+          padding: "9px 17px",
+          boxShadow:
+            "0 0 9px #fff8,0 2px 7px #ffd70070, 0 4px 14px #" +
+            (api.id === "number" ? "f8cc76" : api.id === "quote" ? "3af3fc" : "fb4a99"),
+        }}
+        aria-label={"Next " + api.title.replace("API", "")}
+        onClick={onNext}
+        onMouseDown={e =>
+          (e.currentTarget.style.transform =
+            "scale(0.93) translateY(1px)")
+        }
+        onMouseUp={e => (e.currentTarget.style.transform = "")}
+        onMouseLeave={e => (e.currentTarget.style.transform = "")}
+        tabIndex={0}
+      >
+        Next
+      </button>
+      <style>
+        {`
+        @keyframes funzone-spin {
+          0% { transform: rotate(0deg);}
+          100% { transform: rotate(360deg);}
+        }
+        `}
+      </style>
+    </div>
+  );
+}
+
+// --- Main Arcade Games Page ---
 /**
- * Neon glassmorphic arcade game selection page with animated FunZone API zone.
- * Responsive 2x3 grid, badges for last score, playful Surprise Me, animated Fun Zone, accessible visuals/fonts.
+ * PUBLIC_INTERFACE
+ * Main Arcade Games Page for MiniMayhem Arcade.
+ * - Shows a neon, glassmorphic grid of 6 games (2x3, responsive)
+ * - Each card: vibrant color, game emoji, Play Now with 3D effect, Last Score badge (if any)
+ * - Animated "Surprise Me" button for random game jump
+ * - Fun Zone API cards: JokeAPI, QuotableAPI, NumbersAPI
+ * - Accessible keyboard navigation, screen reader friendly
+ * - Arcade font & visual style, mobile + desktop responsive
  */
 function ArcadeGamesPage() {
   const navigate = useNavigate();
-  const [shuffling, setShuffling] = useState(false);
-  const [selectedIdx, setSelectedIdx] = useState(null);
-  const [lastScores, setLastScores] = useState({});
-  const [funZoneData, setFunZoneData] = useState([]);
-  const [funLoading, setFunLoading] = useState(true);
-  const [funAnimIdx, setFunAnimIdx] = useState(0);
-  const funAnimTimeout = useRef(null);
+  // For game card focus/keyboard navigation
+  const [focusedIdx, setFocusedIdx] = useState(-1);
 
-  // Get scores from localStorage for all games
+  // Fun Zone states
+  const [funZone, setFunZone] = useState({
+    joke: { loading: true, content: "" },
+    quote: { loading: true, content: "" },
+    number: { loading: true, content: "" }
+  });
+
+  // Prefetch fun zone content on mount
   useEffect(() => {
-    const scores = {};
-    GAMES.forEach(g => {
-      const val = localStorage.getItem(g.storageKey);
-      if (val !== null) scores[g.storageKey] = val;
+    FUN_ZONE_APIS.forEach((api) => {
+      fetchFunZone[api.id]().then((val) => {
+        setFunZone((fz) => ({
+          ...fz,
+          [api.id]: { loading: false, content: val }
+        }));
+      });
     });
-    setLastScores(scores);
+    // eslint-disable-next-line
   }, []);
 
-  // Fun Zone: fetch from all 3 APIs on mount or when refreshed
-  const fetchFunZone = async () => {
-    setFunLoading(true);
-    try {
-      // Parallel fetch: JokeAPI, QuotableAPI, NumbersAPI
-      const [jokeRes, quoteRes, triviaRes] = await Promise.all([
-        fetch("https://v2.jokeapi.dev/joke/Any?safe-mode&type=single,twopart"),
-        fetch("https://api.quotable.io/random"),
-        fetch(
-          `https://numbersapi.com/${Math.floor(Math.random() * 100)}/trivia?json`
-        ),
-      ]);
-      // JokeAPI parse:
-      let jokeData;
-      try {
-        jokeData = await jokeRes.json();
-      } catch {
-        jokeData = { type: "single", joke: "Why did the arcade player win? Skill! 🎮" };
+  // Keyboard card grid navigation
+  const gridRef = useRef();
+  function handleCardKey(e, idx) {
+    if (["ArrowDown", "ArrowUp", "ArrowLeft", "ArrowRight"].includes(e.key)) {
+      e.preventDefault();
+      let next = idx;
+      switch (e.key) {
+        case "ArrowRight":
+          next = (idx + 1) % GAMES.length;
+          break;
+        case "ArrowLeft":
+          next = (idx + GAMES.length - 1) % GAMES.length;
+          break;
+        case "ArrowDown":
+          next = (idx + 3) % GAMES.length;
+          break;
+        case "ArrowUp":
+          next = (idx + GAMES.length - 3) % GAMES.length;
+          break;
+        default:
+          break;
       }
-      const joke =
-        jokeData.type === "twopart"
-          ? `${jokeData.setup}\n${jokeData.delivery}`
-          : jokeData.joke;
-      // QuotableAPI parse:
-      let quoteData;
-      try {
-        quoteData = await quoteRes.json();
-      } catch {
-        quoteData = { content: "Be the high score in someone's life!", author: "MiniMayhem Arcade" };
-      }
-      // NumbersAPI:
-      let triviaData;
-      try {
-        triviaData = await triviaRes.json();
-      } catch {
-        triviaData = { text: "42 is the answer to life, the universe, and everything." };
-      }
-      setFunZoneData([
-        {
-          label: "🎭 Joke",
-          text: joke,
-          color: "#09FFE0",
-          bg: "linear-gradient(90deg,#060085,#09FFE0 80%)",
-        },
-        {
-          label: "💬 Quote",
-          text: `"${quoteData.content}" \n— ${quoteData.author}`,
-          color: "#FF67E7",
-          bg: "linear-gradient(90deg,#26004d,#FF67E7 90%)",
-        },
-        {
-          label: "🎲 Trivia",
-          text: triviaData.text,
-          color: "#FFD600",
-          bg: "linear-gradient(90deg,#232323 0,#FFD600 100%)",
-        },
-      ]);
-      setFunAnimIdx(Math.floor(Math.random() * 3));
-    } catch {
-      setFunZoneData([
-        {
-          label: "Fun Unavailable",
-          text: "Oops! The Fun Zone is recharging. Try refreshing below.",
-          color: "#ffffff",
-          bg: "linear-gradient(90deg,#3F51B5,#FF8C00)",
-        },
-      ]);
-      setFunAnimIdx(0);
-    } finally {
-      setTimeout(() => setFunLoading(false), 350);
+      setFocusedIdx(next);
+      gridRef.current &&
+        gridRef.current
+          .querySelectorAll(".arcade-grid-card")
+          [next]?.focus();
     }
-  };
-  useEffect(() => {
-    fetchFunZone();
-    return () => clearTimeout(funAnimTimeout.current);
-  }, []);
-
-  // Animate FunZone card every ~6s
-  useEffect(() => {
-    if (funLoading || funZoneData.length < 2) return;
-    funAnimTimeout.current = setTimeout(
-      () => setFunAnimIdx((ix) => (ix + 1) % funZoneData.length),
-      6000
-    );
-    return () => clearTimeout(funAnimTimeout.current);
-  }, [funLoading, funZoneData, funAnimIdx]);
-
-  // SURPRISE ME — shuffle animation + random navigate
-  const handleSurpriseMe = () => {
-    setShuffling(true);
-    setTimeout(() => {
-      const idx = Math.floor(Math.random() * GAMES.length);
-      setSelectedIdx(idx);
-      setTimeout(() => {
-        setShuffling(false);
-        // Navigate to random game
-        navigate(GAMES[idx].route);
-      }, 400);
-    }, 800);
-  };
-
-  // Keyboard navigation for Surprise Me button
-  const surpriseButtonRef = useRef(null);
-  useEffect(() => {
-    if (!shuffling && selectedIdx !== null) setSelectedIdx(null);
-  }, [shuffling, selectedIdx]);
-
-  // CARD hover/focus animation key
-  const [focusedCard, setFocusedCard] = useState(null);
-
-  // STYLES
-  const styles = {
-    root: {
-      minHeight: "100vh",
-      paddingTop: 112,
-      paddingBottom: 38,
-      background: "radial-gradient(ellipse at 48% 15%, #101731 82%, #0c002a 100%)",
-      color: "#fff",
-      fontFamily: "'Orbitron', 'Press Start 2P', Arial, sans-serif",
-      boxSizing: "border-box",
-      overflowX: "hidden",
-    },
-    container: {
-      maxWidth: 1200,
-      margin: "0 auto",
-      padding: "0 20px",
-      width: "100%",
-    },
-    heroTitle: {
-      fontFamily: "'Orbitron', Arial, sans-serif",
-      fontWeight: 800,
-      fontSize: "2.2rem",
-      textShadow: COLORS.neonGlow,
-      marginBottom: 12,
-      textAlign: "center",
-      letterSpacing: 3,
-      background: "linear-gradient(92deg,#0ff4ff,#fff,#fe2dff 80%)",
-      WebkitBackgroundClip: "text",
-      WebkitTextFillColor: "transparent",
-    },
-    heroDesc: {
-      fontFamily: "'Press Start 2P', 'Orbitron', monospace",
-      fontSize: "1.08rem",
-      maxWidth: 600,
-      margin: "0 auto 30px auto",
-      textAlign: "center",
-      color: "#c9ffff",
-      textShadow: "0 1.5px 7px #00faf98a",
-      letterSpacing: "0.04em",
-      lineHeight: 1.5,
-    },
-    grid: {
-      display: "grid",
-      gridTemplateColumns: "repeat(3, 1fr)",
-      gap: 32,
-      marginBottom: 32,
-    },
-    card: (color, isHovered, isShuffling) => ({
-      position: "relative",
-      background: COLORS.glassBg,
-      border: COLORS.glassBorder,
-      borderRadius: 24,
-      overflow: "visible",
-      minHeight: 220,
-      padding: "30px 18px 28px 18px",
-      boxShadow: COLORS.cardShadow +
-        (isHovered || isShuffling
-          ? `,0 0 36px 7px ${color}80,0 2.5px 50px 2px ${color}80`
-          : ""),
-      transition: "transform 0.22s cubic-bezier(.67,.05,.31,.91), box-shadow 0.19s cubic-bezier(.67, .07, .31, .91)",
-      transform: (isShuffling
-        ? "scale(1.045) rotate(-1.5deg) skewY(2deg)"
-        : isHovered ? "translateY(-8px) scale(1.03)" : "none"),
-      outline: isHovered ? COLORS.focusOutline : "none",
-      cursor: isShuffling ? "not-allowed" : "pointer",
-      pointerEvents: isShuffling ? "none" : "auto",
-      zIndex: isShuffling ? 1 : 0,
-      opacity: isShuffling ? 0.78 : 1,
-      userSelect: "none",
-      willChange: "transform, box-shadow",
-    }),
-    cardTitle: (color) => ({
-      fontFamily: "'Orbitron', 'Arial', sans-serif",
-      fontWeight: 900,
-      fontSize: "1.16rem",
-      textShadow: `0 3px 12px #fff8, 0 2px 8px ${color}`,
-      color,
-      letterSpacing: 2,
-      marginBottom: 14,
-    }),
-    emoji: (color) => ({
-      fontSize: 54,
-      marginBottom: "15px",
-      filter: `drop-shadow(0 0 15px ${color}88)`,
-      lineHeight: 1,
-      transition: "transform 0.19s",
-    }),
-    playBtn: (color, isFocused) => ({
-      fontFamily: "'Press Start 2P', 'Orbitron', monospace",
-      padding: "13px 26px",
-      fontSize: "1.02rem",
-      background: `radial-gradient(ellipse at 50% 90%, #fff 60%,${color} 100%)`,
-      border: "none",
-      borderRadius: 14,
-      color: "#000021",
-      marginTop: 18,
-      fontWeight: 900,
-      textShadow: "0 2px 8px #fff, 0 2.5px 11px #fffc",
-      boxShadow: COLORS.btnArcade,
-      cursor: "pointer",
-      letterSpacing: 2,
-      outline: isFocused ? "3px solid #fff155" : "none",
-      transition: "background 0.18s, box-shadow 0.18s, transform 0.16s",
-      willChange: "transform, box-shadow",
-    }),
-    badge: (color) => ({
-      position: "absolute",
-      top: 14,
-      right: 14,
-      fontFamily: "'Press Start 2P', 'Orbitron', monospace",
-      background: COLORS.badge,
-      color: color,
-      borderRadius: 12,
-      fontSize: "0.75rem",
-      padding: "7px 13px",
-      fontWeight: 900,
-      letterSpacing: 1,
-      textShadow: `0 1.5px 4px #fff, 0 2px 7px ${color}`,
-      boxShadow: `0 2px 17px 3px ${color}44`,
-      border: "2px solid #fff4",
-      zIndex: 8,
-      filter: "drop-shadow(0 1.5px 8px #fff8)",
-    }),
-    surpriseZone: {
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      margin: "36px 0 6px 0",
-    },
-    surpriseBtn: (pressed) => ({
-      fontFamily: "'Press Start 2P', 'Orbitron', monospace",
-      fontSize: "1.18rem",
-      background: `linear-gradient(87deg, #14ffe9 0%, #ffeb3b 82%, #fe2dff 100%)`,
-      color: "#211366",
-      border: "none",
-      borderRadius: 20,
-      padding: "18px 48px",
-      boxShadow: COLORS.neonGlow + ",0 0 50px 1px #00fae0b1",
-      cursor: "pointer",
-      outline: pressed
-        ? "3px solid #fff05f"
-        : "none",
-      transition: "transform 0.16s, box-shadow 0.23s, outline 0.12s",
-      fontWeight: 900,
-      letterSpacing: 2,
-      marginBottom: 8,
-      filter: pressed
-        ? "brightness(95%) drop-shadow(0 0 18px #fff7)"
-        : "drop-shadow(0 0 33px #00fff888)",
-      willChange: "transform, box-shadow",
-      animation: "arcadeSurpriseGlow .56s infinite alternate cubic-bezier(.75,.14,.77,.91)",
-      "--shadow": "#ffd600",
-    }),
-    surpriseHint: {
-      fontFamily: "'Orbitron', 'Arial', sans-serif",
-      color: "#42ffe9",
-      fontSize: "1rem",
-      marginTop: 0,
-      letterSpacing: 1.1,
-      textShadow: "0 2px 10px #00e5ff80",
-      textAlign: "center",
-    },
-    funZone: {
-      margin: "46px auto 0 auto",
-      width: "100%",
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      fontFamily: "'Orbitron', 'Press Start 2P', Arial, sans-serif",
-      position: "relative",
-    },
-    funZoneTitle: {
-      fontFamily: "'Orbitron', Arial",
-      color: "#03fff7",
-      fontSize: "1.22rem",
-      marginBottom: 16,
-      textShadow: COLORS.neonGlow,
-      letterSpacing: 2.6,
-      textAlign: "center",
-    },
-    funCard: (bg, color, active) => ({
-      background: bg,
-      color: color,
-      borderRadius: 18,
-      boxShadow: COLORS.neonGlow + ", 0 2.5px 16px 1px #1c807644" + (active ? ",0 0 48px 14px #fff2" : ""),
-      minHeight: 92,
-      minWidth: 320,
-      maxWidth: 440,
-      margin: "auto",
-      padding: "28px 20px 22px 20px",
-      display: active ? "block" : "none",
-      fontWeight: 900,
-      fontSize: "1.04rem",
-      textAlign: "center",
-      letterSpacing: 1.1,
-      position: "relative",
-      zIndex: 7,
-      lineHeight: 1.55,
-      opacity: active ? 1 : 0,
-      border: "3px solid #1cefff77",
-      filter: active ? "drop-shadow(0 1.5px 22px #13effabb)" : "",
-      transition: "opacity 0.61s cubic-bezier(.6,.17,.62,1.04)",
-      animation: active
-        ? "funZoneFadeIn 0.68s cubic-bezier(.29,.86,.45,1) both"
-        : "none",
-    }),
-    funZoneRefreshBtn: {
-      fontFamily: "'Press Start 2P', 'Orbitron', monospace",
-      padding: "8px 18px",
-      fontSize: "0.95rem",
-      background: "linear-gradient(91deg,#FF67E7 0%,#00fae0 100%)",
-      color: "#151233",
-      border: "none",
-      borderRadius: 13,
-      fontWeight: 900,
-      letterSpacing: 1,
-      marginTop: 16,
-      boxShadow: "0 0 24px 2px #09ffd088",
-      cursor: "pointer",
-      outline: "none",
-      transition: "background 0.16s, box-shadow 0.15s",
-    },
-  };
-
-  // MEDIA QUERIES (Responsive) — add style block in JSX for brevity
-  const responsiveCss = `
-@media (max-width: 950px) {
-  .mma-arcade-grid {
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 28px !important;
   }
-}
-@media (max-width: 650px) {
-  .mma-arcade-grid {
-    grid-template-columns: 1fr !important;
-    gap: 20px !important;
-  }
-  .mma-fun-card-inner {
-    min-width: 0 !important;
-    max-width: 97vw !important;
-    padding-left: 10vw !important;
-    padding-right: 10vw !important;
-    font-size: 0.97rem !important;
-  }
-}
-@keyframes arcadeSurpriseGlow {
-  0% { box-shadow: 0 0 24px 1px #0fffa988,0 0 44px #FFEB3B88,0 2px 15px #fff4; }
-  55% { box-shadow: 0 0 38px 4px #00faffd4,0 0 57px #ffeb3b77,0 3px 11px #fe2dff66; }
-  90% { box-shadow: 0 0 30px 10px #fe2dffbb,0 2px 22px #ff6f0099,0 9px 18px #fff8; }
-  100% { box-shadow: 0 0 33px 4px #ffeb3bcc,0 6px 21px #13fff988,0 4px 15px #fff5; }
-}
-@keyframes funZoneFadeIn {
-  from { opacity: 0; transform: translateY(42px) scale(0.96); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
-}
-`;
 
-  // Accessible ARIA/role for 'fun zone' and keyboard nav
+  // Handle Surprise Me navigation
+  function handleSurpriseMe(idx) {
+    const route = GAMES[idx]?.route;
+    if (route) {
+      navigate(route);
+    }
+  }
+
+  // Fun Zone 'next' callback (per API)
+  function fetchFunZoneCard(api) {
+    setFunZone((fz) => ({
+      ...fz,
+      [api]: { loading: true, content: fz[api].content }
+    }));
+    fetchFunZone[api]().then((val) => {
+      setFunZone((fz) => ({
+        ...fz,
+        [api]: { loading: false, content: val }
+      }));
+    });
+  }
+
+  // --- Main render ---
   return (
-    <>
-      <ArcadeFonts />
-      <style>{responsiveCss}</style>
-      <div style={styles.root}>
-        <div style={styles.container}>
-          <div style={{textAlign:"center",marginBottom:10}}>
-            <h2 style={styles.heroTitle} className="arcade-font-orbitron">
-              🎮 Arcade Hub & Fun Zone
-            </h2>
-            <div style={styles.heroDesc}>
-              Six dazzling mini games await.<br />
-              Aim high, claim the glowing badge, and unleash surprise fun!<br />
-              <span style={{color:"#09FFE0",fontWeight:900,textShadow:"0 2px 12px #0ffb",fontSize:"1.01em"}}>Fully neon. Always arcade.</span>
-            </div>
-          </div>
-          {/* Arcade Games Grid */}
-          <section>
-            <div
-              className="mma-arcade-grid"
-              style={styles.grid}
-              aria-label="Arcade Games selection"
-            >
-              {GAMES.map((game, idx) => (
-                <div
-                  tabIndex={0}
-                  key={game.title}
-                  aria-label={`${game.title} game card`}
-                  style={styles.card(game.color, focusedCard === idx, shuffling && selectedIdx !== idx)}
-                  onMouseEnter={() => setFocusedCard(idx)}
-                  onMouseLeave={() => setFocusedCard(null)}
-                  onFocus={() => setFocusedCard(idx)}
-                  onBlur={() => setFocusedCard(null)}
-                  onClick={() => !shuffling && navigate(game.route)}
-                  role="button"
-                  onKeyDown={e => {
-                    if ((e.key === "Enter" || e.key === " ") && !shuffling) {
-                      navigate(game.route);
-                    }
-                  }}
-                  aria-pressed="false"
-                >
-                  {lastScores[game.storageKey] && (
-                    <div
-                      style={styles.badge(game.color)}
-                      aria-label={`Last Score: ${lastScores[game.storageKey]}`}
-                    >
-                      🔥 Last Score<br />{lastScores[game.storageKey]}
-                    </div>
-                  )}
-                  <div style={styles.emoji(game.color)}>{game.emoji}</div>
-                  <div style={styles.cardTitle(game.color)}>{game.title}</div>
-                  <button
-                    style={styles.playBtn(game.color, focusedCard === idx)}
-                    className="arcade-font-pressstart"
-                    onClick={e => {
-                      e.stopPropagation();
-                      if (!shuffling) navigate(game.route);
-                    }}
-                    tabIndex={-1}
-                    aria-label={`Play ${game.title} now`}
-                  >
-                    Play Now
-                  </button>
-                </div>
-              ))}
-            </div>
-          </section>
-          {/* Surprise Me Button Zone */}
-          <div style={styles.surpriseZone}>
-            <button
-              type="button"
-              style={styles.surpriseBtn(shuffling)}
-              ref={surpriseButtonRef}
-              disabled={shuffling}
-              aria-busy={shuffling}
-              aria-label="Surprise Me - Play a Random Game"
-              onClick={handleSurpriseMe}
-              onKeyDown={e => {
-                if ((e.key === "Enter" || e.key === " ") && !shuffling) {
-                  handleSurpriseMe();
-                }
-              }}
-            >
-              🕹️ Surprise Me!
-            </button>
-            <div
-              style={styles.surpriseHint}
-              aria-live="polite"
-            >
-              {shuffling
-                ? <span style={{ color: "#fff453" }}>
-                    Shuffling the arcade...<span style={{animation:"arcadeSurpriseGlow 0.4s infinite alternate"}}> ✨</span>
-                  </span>
-                : <span>
-                    Feeling lucky? Hit <strong>Surprise Me!</strong> for instant arcade adventure!
-                  </span>
-              }
-            </div>
-          </div>
-          {/* Fun Zone Animated Carousel */}
-          <section
-            style={styles.funZone}
-            id="fun-zone"
-            tabIndex={-1}
-            aria-label="Fun Zone: jokes, quotes, and trivia"
-            aria-live="polite"
-          >
-            <h3 style={styles.funZoneTitle} className="arcade-font-orbitron">
-              🌟 Fun Zone API — Fresh Jokes, Quotes, and Trivia!
-            </h3>
-            {funLoading ? (
-              <div
-                className="mma-fun-card-inner"
-                style={styles.funCard("#002a60", "#06ffe9", true)}
-                aria-busy="true"
-              >
-                <span style={{
-                  fontSize:32,display:'inline-block',animation:'arcadeSurpriseGlow 0.84s infinite alternate'}}>⏳</span>
-                Loading arcade fun...
-              </div>
-            ) : (
-              funZoneData.map((fun, ix) => (
-                <div
-                  key={fun.label}
-                  className="mma-fun-card-inner"
-                  aria-label={fun.label}
-                  style={styles.funCard(fun.bg, fun.color, funAnimIdx === ix)}
-                >
-                  <div
-                    style={{
-                      fontFamily: "'Press Start 2P','Orbitron', monospace",
-                      fontSize: "1rem",
-                      color: "#fff",
-                      marginBottom: 10,
-                      letterSpacing: 1.1,
-                      textShadow: "0 1.5px 6px #fff8",
-                      lineHeight: 1.1,
-                    }}
-                  >
-                    {fun.label}
-                  </div>
-                  <div style={{whiteSpace:'pre-line',fontSize:'1.05em'}}>{fun.text}</div>
-                </div>
-              ))
-            )}
-            <button
-              type="button"
-              aria-label="Refresh Fun Zone"
-              style={styles.funZoneRefreshBtn}
-              onClick={() => {
-                setFunLoading(true);
-                fetchFunZone();
-              }}
-              tabIndex={0}
-              disabled={funLoading}
-            >
-              🔁 Refresh Fun
-            </button>
-            <div
-              aria-hidden="true"
-              style={{
-                marginTop:18,
-                fontSize:"0.89em",
-                color:"#72e8f8",
-                textShadow: "0 1px 5px #20fff944",
-                fontFamily: "'Orbitron', 'Arial', sans-serif",
-                opacity: 0.84,
-              }}>
-              Powered by JokeAPI, Quotable, NumbersAPI
-            </div>
-          </section>
-        </div>
-      </div>
-    </>
+    <div
+      style={{
+        maxWidth: 1200,
+        margin: "0 auto",
+        padding: "110px 15px 30px 15px",
+        minHeight: "100vh",
+        boxSizing: "border-box",
+        fontFamily: arcadeText,
+        background:
+          "radial-gradient(ellipse 160% 90% at 60% 90%, #1e003c 30%, #0cf6e2 90%, #16034d 100%)"
+      }}
+      aria-labelledby="arcade-games-heading"
+    >
+      {/* Header */}
+      <h1
+        id="arcade-games-heading"
+        style={{
+          fontFamily: arcadeText,
+          fontSize: 36,
+          color: "#fff2e1",
+          lineHeight: 1.05,
+          textShadow:
+            "0 0 16px #0ffb, 0 6px 48px #1ae2f933, 0 2px 21px #f711e0aa",
+          letterSpacing: "2.5px",
+          margin: "0 0 13px 0",
+          textAlign: "center"
+        }}
+      >
+        <span role="img" aria-label="Joysticks" style={{ fontSize: 38 }}>
+          🕹️
+        </span>{" "}
+        Arcade Games
+      </h1>
+      <p
+        style={{
+          maxWidth: 600,
+          color: "#effcff",
+          fontFamily: arcadeText,
+          fontSize: 17,
+          textAlign: "center",
+          opacity: 0.89,
+          margin: "0 auto 34px auto",
+          textShadow: "0 1px 8px #9ffdff77,0 1px 3px #fff5"
+        }}
+      >
+        A vibrant neon playground! <span style={{ color: "#65ffe0" }}>Play, compete, and beat your scores on every mini game — or try your luck with 'Surprise Me'!</span>
+      </p>
+
+      {/* 2x3 Game Card Grid */}
+      <section
+        aria-label="Arcade Games Grid"
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(3, 1fr)",
+          gap: "2.3vw",
+          maxWidth: 960,
+          margin: "0 auto",
+          marginBottom: 15,
+          padding: "8px 1vw",
+          position: "relative"
+        }}
+        ref={gridRef}
+        className="arcade-games-grid"
+      >
+        {GAMES.map((game, idx) => (
+          <ArcadeGameCard
+            key={game.title}
+            game={game}
+            tabIndex={0}
+            isFocused={focusedIdx === idx}
+            onMouseOver={() => setFocusedIdx(idx)}
+            onMouseOut={() => setFocusedIdx(-1)}
+            onPlayClick={() => navigate(game.route)}
+            onKeyDown={(e) => handleCardKey(e, idx)}
+          />
+        ))}
+      </section>
+
+      {/* Surprise Me button (centered) */}
+      <SurpriseMeButton
+        gameRoutes={GAMES}
+        onSurprise={handleSurpriseMe}
+      />
+
+      {/* Fun Zone Section */}
+      <section
+        aria-label="Fun Zone: Jokes, Quotes, Trivia"
+        style={{
+          marginTop: 49,
+          padding: "23px 0 12px 0",
+          borderTop: "2.1px solid #fff3",
+          borderRadius: "22px 22px 0 0",
+          maxWidth: 900,
+          marginLeft: "auto",
+          marginRight: "auto",
+          boxShadow: "0 0 38px #13e7ff77"
+        }}
+      >
+        <h2
+          id="fun-zone-heading"
+          style={{
+            fontFamily: arcadeText,
+            fontSize: 25,
+            margin: "0 0 17px 0",
+            color: "#fffeea",
+            textAlign: "center",
+            letterSpacing: "1.8px",
+            textShadow:
+              "0 0 12px #0ffb, 0 6px 23px #1ae2f944, 0 2px 16px #f711e0aa"
+          }}
+        >
+          <span role="img" aria-label="confetti" style={{ fontSize: 26 }}>
+            🎉
+          </span>{" "}
+          Fun Zone
+        </h2>
+        <nav
+          aria-label="Fun Zone Content"
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "center",
+            gap: "3vw",
+            marginTop: 7,
+            flexWrap: "wrap",
+            marginBottom: 7
+          }}
+        >
+          {FUN_ZONE_APIS.map((api) => (
+            <FunZoneCard
+              key={api.id}
+              api={api}
+              content={funZone[api.id].content}
+              loading={funZone[api.id].loading}
+              onNext={() => fetchFunZoneCard(api.id)}
+            />
+          ))}
+        </nav>
+        <p
+          style={{
+            textAlign: "center",
+            fontFamily: arcadeText,
+            fontSize: 13,
+            color: "#aeefffcc",
+            marginTop: 18,
+            marginBottom: 2,
+            opacity: 0.9,
+            letterSpacing: ".7px",
+            textShadow: "0 1px 6px #fffc"
+          }}
+        >
+          <span role="img" aria-label="sparkle">
+            ✨
+          </span>{" "}
+          Powered by <strong>JokeAPI</strong>, <strong>QuotableAPI</strong>, <strong>NumbersAPI</strong>
+        </p>
+      </section>
+
+      {/* Responsive, font, and custom hover/focus styles */}
+      <style>
+        {`
+        @import url('${fontUrl}');
+        .arcade-grid-card:focus, .arcade-grid-card:hover {
+          outline: 3px solid #ffe267cc !important;
+          box-shadow: 0 0 0 8px #ffedbf64, 0 4px 24px #f8e228bb, 0 0 0 3px #17ffd775;
+          border:2.5px solid #ffd900;
+          z-index: 2;
+        }
+        .arcade-grid-card {
+          cursor: pointer;
+          user-select: none;
+          min-width: 0;
+        }
+        .arcade-play-btn:focus-visible, .arcade-play-btn:hover {
+          outline: 3px solid #12fcffa8 !important;
+          transform: scale(0.97);
+          box-shadow: 0 3px 26px #11fdfdb9, 0 7px 18px #fa4fd7aa, 0 0 0 3px #fffc;
+          background: linear-gradient(90deg,#41eaff,#fcf285,#ff54d4);
+        }
+        .arcade-play-btn:active {
+          background: linear-gradient(100deg,#fffaea,#14e1fd 120%);
+          color: #411254;
+        }
+        .arcade-play-btn:focus-visible {
+          border: 2.9px solid #fff;
+        }
+        .funzone-card:focus, .funzone-card:hover {
+          outline: 2.7px solid #fffc;
+          box-shadow: 0 0 16px 8px #fafeffcc, 0 2px 22px #51dad0bb;
+          z-index: 1;
+        }
+        /* Responsive arcade games grid */
+        @media (max-width: 1024px) {
+          .arcade-games-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 3vw !important;
+          }
+        }
+        @media (max-width: 650px) {
+          .arcade-games-grid {
+            grid-template-columns: 1fr !important;
+            gap: 20px !important;
+            padding: 0 0.4vw;
+          }
+        }
+        /* Make Fun Zone cards stack on mobile */
+        @media (max-width: 700px) {
+          [aria-label="Fun Zone Content"] {
+            flex-direction: column !important;
+            gap: 17px !important;
+            align-items: center;
+          }
+        }
+        /* Arcade fonts */
+        body, .arcade-grid-card, .surprise-arcade-btn, .arcade-play-btn, .funzone-card {
+          font-family: ${arcadeText} !important;
+        }
+      `}
+      </style>
+    </div>
   );
 }
 
