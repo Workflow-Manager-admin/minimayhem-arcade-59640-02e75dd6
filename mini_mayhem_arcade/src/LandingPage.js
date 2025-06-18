@@ -8,7 +8,6 @@ import React, {
   Suspense,
 } from "react";
 import { useNavigate } from "react-router-dom";
-import Navbar from "./Navbar";
 
 /**
  * Arcade font, pixel/neon CSS, injected for arcade style.
@@ -582,8 +581,6 @@ const LandingPage = React.memo(function LandingPage() {
   return (
     <>
       <style>{ARCADE_FONTS + ARCADE_CSS}</style>
-      <Navbar />
-      <div className="arcade-navbar-pad" />
       <main className="arcade-landing-bg" style={{ minHeight: "100vh", width: "100vw" }}>
         <WelcomeSection onSurprise={handleSurprise} />
         <div className="container" style={{ maxWidth: 1050, margin: "0 auto", padding: "0 12px", zIndex: 2, position: "relative" }}>

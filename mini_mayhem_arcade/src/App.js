@@ -3,17 +3,19 @@ import './App.css';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import LandingPage from './LandingPage';
 import GamesPage from './GamesPage';
+import Navbar from './Navbar';
 
 // PUBLIC_INTERFACE
 /**
  * Main application container for MiniMayhem Arcade.
  * Handles SPA routing with LandingPage (at "/") and GamesPage (at "/games").
- * The Navbar links and SPA navigation are enabled for seamless client-side transitions.
+ * Renders Navbar above all page components to provide a consistent navigation experience.
  */
 function App() {
   return (
     <BrowserRouter>
       <div className="app">
+        <Navbar />
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/games" element={<GamesPage />} />
