@@ -10,6 +10,7 @@ import MemoryPuzzleGame from './MemoryPuzzleGame';
 import ReactionSpeedGame from './ReactionSpeedGame';
 import WordTypingGame from './WordTypingGame';
 import SudokuGame from './SudokuGame';
+import SlidingTilePuzzleGame from './SlidingTilePuzzleGame';
 // PUBLIC_INTERFACE
 /**
  * Main application container for MiniMayhem Arcade.
@@ -30,6 +31,7 @@ function App() {
           <Route path="/games/reaction-speed" element={<ReactionSpeedGame />} />
           <Route path="/games/word-typing" element={<WordTypingGame />} />
           <Route path="/games/sudoku" element={<SudokuGame />} />
+          <Route path="/games/sliding-puzzle" element={<SlidingTilePuzzleGame />} />
           {/* Future: more routes, e.g., <Route path="/top-games" element={<TopGamesPage />} /> */}
         </Routes>
       </div>
