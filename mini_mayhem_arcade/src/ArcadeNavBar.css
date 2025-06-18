@@ -1,171 +1,81 @@
-/* Import Press Start 2P font from Google Fonts (pixel arcade style) and fallbacks */
-@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Orbitron:wght@700&display=swap');
-
-/* MAIN NAVBAR CONTAINER */
 .arcade-navbar {
-  width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem 2rem;
-  box-sizing: border-box;
-  background: linear-gradient(90deg, #1f005c 0%, #5b0060 25%, #870160 50%, #ac255e 75%, #ca485c 100%);
-  font-family: 'Press Start 2P', 'Orbitron', 'Rajdhani', monospace;
-  min-height: 60px;
-  z-index: 100;
-  box-shadow: 0 2px 16px 0 #39006099;
+  background: linear-gradient(90deg, #1A0239 0%, #290054 80%);
+  padding: 0.6em 2em 0.6em 1.1em;
+  border-bottom: 2px solid #ff6347;
+  box-shadow: 0 2px 24px 0 #2e0073a0;
+  font-family: 'Orbitron', 'Trebuchet MS', Arial, sans-serif;
 }
 
-/* ARCADE TITLE (with Emoji) */
-.arcade-navbar-title {
+.arcade-navbar-left {
   display: flex;
   align-items: center;
-  gap: 20px;
-  font-size: 1.1rem;
-  text-shadow:
-    0 0 6px #fff,
-    0 0 10px #af4df7,
-    0 0 18px #39ff14,
-    0 0 32px #8701fd;
 }
 
-.arcade-title-text {
+.arcade-navbar-logo {
+  display: flex;
+  align-items: center;
+  font-size: 1.46em;
+  font-weight: 900;
+  color: #FFC107;
+  text-shadow: 0 0 5px #ff6347, 0 0 20px #ffc1078f;
+  text-decoration: none;
+  letter-spacing: 1.5px;
+  padding-right: 1.3em;
+  transition: color 0.16s;
+}
+
+.arcade-navbar-logo:hover {
   color: #fff;
-  font-family: 'Press Start 2P', 'Orbitron', sans-serif;
-  letter-spacing: 2px;
-  font-size: 1.1rem;
-  text-shadow:
-    0 0 6px #ca485c,
-    0 0 12px #39ff14;
-}
-.emoji-glow {
-  display: inline-block;
-  font-size: 2.25rem;
-  filter: drop-shadow(0 0 10px #39ff14) drop-shadow(0 0 5px #fff38099);
-  margin-right: 0.3em;
-  vertical-align: middle;
-  animation: emoji-glow-pulse 2s infinite alternate;
-}
-/* Fun neon emoji animation */
-@keyframes emoji-glow-pulse {
-  0% { filter: drop-shadow(0 0 8px #39ff14); }
-  60% { filter: drop-shadow(0 0 18px #39ff14) drop-shadow(0 0 10px #ca485c); }
-  100% { filter: drop-shadow(0 0 8px #39ff14); }
+  text-shadow: 0 0 8px #FFC107, 0 0 22px #ff6347dd;
+  cursor: pointer;
 }
 
-/* NAVBAR LINKS SECTION */
+.arcade-navbar-site-title {
+  font-family: 'Orbitron', 'Trebuchet MS', Arial, sans-serif;
+  font-size: 1.18em;
+  font-weight: bold;
+  letter-spacing: 2px;
+  margin-left: 0.08em;
+}
+
 .arcade-navbar-links {
   display: flex;
-  align-items: center;
-  gap: 30px;
-  /* Ensures links are always visible and spaced out */
+  gap: 1.3em;
 }
 
-/* NAVBAR LINKS STYLING */
-.arcade-link {
-  color: #ffffff;
+.arcade-navbar-link {
+  color: #F7FCFF;
+  font-size: 1.06em;
+  font-weight: 800;
+  letter-spacing: 1px;
   text-decoration: none;
-  text-transform: uppercase;
-  letter-spacing: 0.18em;
-  padding: 0.7em 1.5em;
-  border-radius: 6px;
-  font-size: 1.08rem;
-  font-weight: 900;
-  background: transparent;
-  position: relative;
-  transition:
-    color 0.15s,
-    background 0.18s,
-    box-shadow 0.18s,
-    transform 0.14s;
-  font-family: 'Press Start 2P', 'Orbitron', 'Rajdhani', monospace;
+  padding: 0.35em 1.18em;
+  border-radius: 2em;
+  background: rgba(44,7,94, 0.38);
+  box-shadow: 0 0 8px #ff634766, 0 0 18px #400ca655;
+  margin-left: 0.09em;
   outline: none;
-  box-shadow: 0 0 0 #39ff1499;
-  /* Soft outer glow fitting for arcade links */
+  border: 2px solid transparent;
+  position: relative;
+  transition: color 0.17s, border 0.19s, background 0.2s, box-shadow 0.22s;
 }
 
-.arcade-link:not(.arcade-link-active) {
-  text-shadow:
-    0 0 4px #fff2,
-    0 0 10px #9302ed55;
+.arcade-navbar-link:hover,
+.arcade-navbar-link:focus {
+  color: #FFC107;
+  background: #29154d;
+  border: 2px solid #FFC107;
+  box-shadow: 0 0 14px #ff6347cc, 0 0 30px #ffc107aa;
+  text-shadow: 0 0 4px #ffc107;
 }
 
-/* ACTIVE ARCADE LINK: NEON, GLOW, UNDERLINE */
-.arcade-link-active,
-.arcade-link.active,
-.arcade-link[aria-current="page"] {
-  color: #39ff14;
-  text-shadow:
-    0 0 8px #39ff14,
-    0 0 18px #fff,
-    0 0 32px #39ff14;
-  background: linear-gradient(90deg, #ac255e77 0%, #39ff1433 100%);
-  /* Fun underline neon effect */
-  box-shadow:
-    0 0 8px #39ff14,
-    0 2px 26px #39ff1477;
-  border-bottom: 3px solid #39ff14;
-  /* Arcade-style scale for accent */
-  transform: scale(1.13);
-  z-index: 1;
-}
-
-.arcade-link:focus-visible {
-  outline: 2px solid #39ff14;
-}
-
-/* HOVER + ACTIVE (CLICK) STATE SPARKLE */
-.arcade-link:hover,
-.arcade-link:focus {
-  color: #ffe740;
-  text-shadow:
-    0 0 12px #ffe740,
-    0 0 18px #39ff14,
-    0 0 25px #ca485c;
-  background: linear-gradient(90deg, #87016033 0%, #ffea0033 100%);
-  box-shadow:
-    0 0 10px #ffe74066,
-    0 2px 24px #39ff1499;
-  transform: scale(1.08);
-  border-bottom: 2px solid #ffe740;
-}
-
-.arcade-link:active {
-  /* Click/Tap press-in effect */
-  color: #ca485c;
-  background: linear-gradient(90deg, #39ff14cc 0%, #ac255ecc 100%);
-  box-shadow: 0 0 36px #39ff14, 0 0 60px #ca485caa;
-  transform: scale(0.96);
-  transition: transform 0.08s, box-shadow 0.08s;
-}
-
-/* RESPONSIVENESS: Collapse links on tiny screens */
-@media (max-width: 600px) {
-  .arcade-navbar {
-    flex-direction: column;
-    align-items: stretch;
-    padding: 0.6rem 0.6rem;
-    min-height: unset;
-  }
-  .arcade-navbar-title {
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 0.6rem;
-  }
-  .arcade-navbar-links {
-    justify-content: center;
-    gap: 12px;
-  }
-  .arcade-link {
-    padding: 0.62em 0.5em;
-    font-size: 0.95rem;
-    margin-bottom: 0.22rem;
-  }
-}
-
-/* Always-on-top shadow for fun */
-.arcade-navbar {
-  position: sticky;
-  top: 0;
-  left: 0;
+.arcade-navbar-link.active {
+  color: #ff6347;
+  background: #FFF2cc23;
+  border: 2px solid #ff6347;
+  box-shadow: 0 0 15px #ff634759, 0 0 32px #ffc10744;
+  text-shadow: 0 0 10px #ffc107;
 }

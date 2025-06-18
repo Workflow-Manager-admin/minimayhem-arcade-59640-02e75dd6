@@ -1,45 +1,43 @@
-import React from "react";
-import { NavLink } from "react-router-dom";
-import "./ArcadeNavBar.css";
+import React from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import './ArcadeNavBar.css';
 
 // PUBLIC_INTERFACE
 /**
- * ArcadeNavBar is a visually striking, always-visible navigation bar inspired by retro arcade aesthetics.
- * Features include: vibrant gradient background, retro pixelated font, neon glowing active link, 
- * glowing and scaling hover/click feedback, emoji branding, and consistent arcade-style spacing.
+ * ArcadeNavBar: Navigation bar for MiniMayhem Arcade.
+ * - Only the 'MiniMayhem Arcade' logo/title on the left links to the landing page ('/').
+ * - Other navigation links: 'Games', 'Top Games'
+ * - No 'Home' item anywhere in the nav.
+ * - Neon arcade styling, consistent with app branding.
  */
 function ArcadeNavBar() {
+  const location = useLocation();
+
+  // Helper to determine "active" nav link styling
+  const isActive = (path) => location.pathname === path;
+
   return (
     <nav className="arcade-navbar">
-      <div className="arcade-navbar-title">
-        <span role="img" aria-label="arcade controller" className="emoji-glow">
-          🎮
-        </span>
-        <span className="arcade-title-text">MiniMayhem Arcade</span>
+      <div className="arcade-navbar-left">
+        {/* Logo/title is the only link to landing page */}
+        <Link to="/" className="arcade-navbar-logo">
+          <span role="img" aria-label="arcade joystick" style={{ marginRight: '0.3em' }}>🕹️</span>
+          <span className="arcade-navbar-site-title">MiniMayhem Arcade</span>
+        </Link>
       </div>
       <div className="arcade-navbar-links">
-        <NavLink
-          exact="true"
-          to="/"
-          className="arcade-link"
-          activeclassname="arcade-link-active"
-        >
-          Home
-        </NavLink>
-        <NavLink
+        <Link
           to="/games"
-          className="arcade-link"
-          activeclassname="arcade-link-active"
+          className={`arcade-navbar-link${isActive('/games') ? ' active' : ''}`}
         >
           Games
-        </NavLink>
-        <NavLink
+        </Link>
+        <Link
           to="/top-games"
-          className="arcade-link"
-          activeclassname="arcade-link-active"
+          className={`arcade-navbar-link${isActive('/top-games') ? ' active' : ''}`}
         >
-          Trending
-        </NavLink>
+          Top Games
+        </Link>
       </div>
     </nav>
   );
