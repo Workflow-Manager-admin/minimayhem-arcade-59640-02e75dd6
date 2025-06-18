@@ -7,13 +7,13 @@
 <i> [webpack-dev-server] On Your Network (IPv4): http://172.17.0.2:3000/
 <i> [webpack-dev-server] Content not from webpack is served from './public' directory
 Injecting EditorRootWrapper import: ../.ve/EditorRootWrapper
-asset bundle.js 1.93 MiB [emitted] (name: main)
+asset bundle.js 1.95 MiB [emitted] (name: main)
 asset index.html 1.98 KiB [emitted]
 runtime modules 28.7 KiB 15 modules
-cacheable modules 1.73 MiB
+cacheable modules 1.75 MiB
   modules by path ./node_modules/ 1.54 MiB 34 modules
-  modules by path ./src/ 181 KiB
-    modules by path ./src/*.js 173 KiB 10 modules
+  modules by path ./src/ 197 KiB
+    modules by path ./src/*.js 190 KiB 10 modules
     modules by path ./src/*.css 7.49 KiB
       ./src/index.css 2.23 KiB [built] [code generated]
       + 3 modules
@@ -23,106 +23,26 @@ cacheable modules 1.73 MiB
       ./.ve/EditorOverlay.css 2.25 KiB [built] [code generated]
       ./node_modules/css-loader/dist/cjs.js!./.ve/EditorOverlay.css 697 bytes [built] [code generated]
     ./.ve/EditorOverlay.jsx 1.58 KiB [built] [code generated]
-webpack 5.99.9 compiled successfully in 1726 ms
+webpack 5.99.9 compiled successfully in 1695 ms
 assets by status 1.98 KiB [cached] 1 asset
-assets by path *.js 1.99 MiB
-  asset bundle.js 1.95 MiB [emitted] (name: main)
-  asset main.5ac7a41ae4ece4b02d72.hot-update.js 38.6 KiB [emitted] [immutable] [hmr] (name: main)
-asset main.5ac7a41ae4ece4b02d72.hot-update.json 28 bytes [emitted] [immutable] [hmr]
-Entrypoint main 1.99 MiB = bundle.js 1.95 MiB main.5ac7a41ae4ece4b02d72.hot-update.js 38.6 KiB
-cached modules 1.72 MiB [cached] 52 modules
+assets by path *.js 2.01 MiB
+  asset bundle.js 1.98 MiB [emitted] (name: main)
+  asset main.20a9ac133311e2a8a902.hot-update.js 32 KiB [emitted] [immutable] [hmr] (name: main)
+asset main.20a9ac133311e2a8a902.hot-update.json 28 bytes [emitted] [immutable] [hmr]
+Entrypoint main 2.01 MiB = bundle.js 1.98 MiB main.20a9ac133311e2a8a902.hot-update.js 32 KiB
+cached modules 1.74 MiB [cached] 52 modules
 runtime modules 28.7 KiB 15 modules
-./src/WordTypingGame.js 30.2 KiB [built] [code generated]
-webpack 5.99.9 compiled successfully in 344 ms
+javascript modules 23.4 KiB
+  ./src/App.js 2.86 KiB [built] [code generated]
+  ./src/SudokuGame.js 20.5 KiB [built] [code generated]
+webpack 5.99.9 compiled successfully in 232 ms
 assets by status 1.98 KiB [cached] 1 asset
-assets by path *.js 1.99 MiB
-  asset bundle.js 1.95 MiB [emitted] (name: main)
-  asset main.af72fb080ac3526f0c36.hot-update.js 38.7 KiB [emitted] [immutable] [hmr] (name: main)
-asset main.af72fb080ac3526f0c36.hot-update.json 28 bytes [emitted] [immutable] [hmr]
-Entrypoint main 1.99 MiB = bundle.js 1.95 MiB main.af72fb080ac3526f0c36.hot-update.js 38.7 KiB
-cached modules 1.72 MiB [cached] 52 modules
+assets by path *.js 1.98 MiB
+  asset bundle.js 1.98 MiB [emitted] (name: main)
+  asset main.394698a196ce6e1f13e0.hot-update.js 8.05 KiB [emitted] [immutable] [hmr] (name: main)
+asset main.394698a196ce6e1f13e0.hot-update.json 28 bytes [emitted] [immutable] [hmr]
+Entrypoint main 1.98 MiB = bundle.js 1.98 MiB main.394698a196ce6e1f13e0.hot-update.js 8.05 KiB
+cached modules 1.76 MiB [cached] 53 modules
 runtime modules 28.7 KiB 15 modules
-./src/WordTypingGame.js 30.3 KiB [built] [code generated]
-webpack 5.99.9 compiled successfully in 121 ms
-assets by status 1.98 KiB [cached] 1 asset
-assets by path *.js 1.93 MiB
-  asset bundle.js 1.92 MiB [emitted] (name: main)
-  asset main.23451901d697d78fc5fd.hot-update.js 8.44 KiB [emitted] [immutable] [hmr] (name: main)
-asset main.23451901d697d78fc5fd.hot-update.json 28 bytes [emitted] [immutable] [hmr]
-Entrypoint main 1.93 MiB = bundle.js 1.92 MiB main.23451901d697d78fc5fd.hot-update.js 8.44 KiB
-cached modules 1.71 MiB [cached] 51 modules
-runtime modules 28.7 KiB 15 modules
-javascript modules 2.86 KiB
-  ./src/App.js 2.83 KiB [code generated]
-  ./src/WordTypingGame.js 39 bytes [built] [code generated] [1 error]
-
-ERROR in ./src/WordTypingGame.js
-Module build failed (from ./node_modules/babel-loader/lib/index.js):
-SyntaxError: /home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/src/WordTypingGame.js: Identifier 'animStyle' has already been declared. (500:8)
-
-  498 |
-  499 |   // Prepare animStyle up front, always call the hook
-> 500 |   const animStyle = useAnimation(
-      |         ^
-  501 |     { boxShadow: "0 0 20px 6px #81ff7c90, 0 0 8px 3px #FFD600" },
-  502 |     animatePerfect
-  503 |   );
-    at constructor (/home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/node_modules/@babel/parser/lib/index.js:363:19)
-    at JSXParserMixin.raise (/home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/node_modules/@babel/parser/lib/index.js:6609:19)
-    at ScopeHandler.checkRedeclarationInScope (/home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/node_modules/@babel/parser/lib/index.js:1626:19)
-    at ScopeHandler.declareName (/home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/node_modules/@babel/parser/lib/index.js:1592:12)
-    at JSXParserMixin.declareNameFromIdentifier (/home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/node_modules/@babel/parser/lib/index.js:7538:16)
-    at JSXParserMixin.checkIdentifier (/home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/node_modules/@babel/parser/lib/index.js:7534:12)
-    at JSXParserMixin.checkLVal (/home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/node_modules/@babel/parser/lib/index.js:7475:12)
-    at JSXParserMixin.parseVarId (/home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/node_modules/@babel/parser/lib/index.js:13327:10)
-    at JSXParserMixin.parseVar (/home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/node_modules/@babel/parser/lib/index.js:13302:12)
-    at JSXParserMixin.parseVarStatement (/home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/node_modules/@babel/parser/lib/index.js:13149:10)
-    at JSXParserMixin.parseStatementContent (/home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/node_modules/@babel/parser/lib/index.js:12770:23)
-    at JSXParserMixin.parseStatementLike (/home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/node_modules/@babel/parser/lib/index.js:12685:17)
-    at JSXParserMixin.parseStatementListItem (/home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/node_modules/@babel/parser/lib/index.js:12665:17)
-    at JSXParserMixin.parseBlockOrModuleBlockBody (/home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/node_modules/@babel/parser/lib/index.js:13235:61)
-    at JSXParserMixin.parseBlockBody (/home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/node_modules/@babel/parser/lib/index.js:13228:10)
-    at JSXParserMixin.parseBlock (/home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/node_modules/@babel/parser/lib/index.js:13216:10)
-    at JSXParserMixin.parseFunctionBody (/home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/node_modules/@babel/parser/lib/index.js:12035:24)
-    at JSXParserMixin.parseFunctionBodyAndFinish (/home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/node_modules/@babel/parser/lib/index.js:12021:10)
-    at /home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/node_modules/@babel/parser/lib/index.js:13360:12
-    at JSXParserMixin.withSmartMixTopicForbiddingContext (/home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/node_modules/@babel/parser/lib/index.js:12338:14)
-    at JSXParserMixin.parseFunction (/home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/node_modules/@babel/parser/lib/index.js:13359:10)
-    at JSXParserMixin.parseExportDefaultExpression (/home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/node_modules/@babel/parser/lib/index.js:13822:19)
-    at JSXParserMixin.parseExport (/home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/node_modules/@babel/parser/lib/index.js:13743:25)
-    at JSXParserMixin.parseStatementContent (/home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/node_modules/@babel/parser/lib/index.js:12797:27)
-    at JSXParserMixin.parseStatementLike (/home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/node_modules/@babel/parser/lib/index.js:12685:17)
-    at JSXParserMixin.parseModuleItem (/home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/node_modules/@babel/parser/lib/index.js:12662:17)
-    at JSXParserMixin.parseBlockOrModuleBlockBody (/home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/node_modules/@babel/parser/lib/index.js:13235:36)
-    at JSXParserMixin.parseBlockBody (/home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/node_modules/@babel/parser/lib/index.js:13228:10)
-    at JSXParserMixin.parseProgram (/home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/node_modules/@babel/parser/lib/index.js:12541:10)
-    at JSXParserMixin.parseTopLevel (/home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/node_modules/@babel/parser/lib/index.js:12531:25)
-    at JSXParserMixin.parse (/home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/node_modules/@babel/parser/lib/index.js:14410:10)
-    at parse (/home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/node_modules/@babel/parser/lib/index.js:14444:38)
-    at parser (/home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/node_modules/@babel/core/lib/parser/index.js:41:34)
-    at parser.next (<anonymous>)
-    at normalizeFile (/home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/node_modules/@babel/core/lib/transformation/normalize-file.js:64:37)
-    at normalizeFile.next (<anonymous>)
-    at run (/home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/node_modules/@babel/core/lib/transformation/index.js:22:50)
-    at run.next (<anonymous>)
-    at transform (/home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/node_modules/@babel/core/lib/transform.js:22:33)
-    at transform.next (<anonymous>)
-    at step (/home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/node_modules/gensync/index.js:261:32)
-    at /home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/node_modules/gensync/index.js:273:13
-    at async.call.result.err.err (/home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/node_modules/gensync/index.js:223:11)
- @ ./src/App.js 11:0-46 67:37-51
- @ ./src/index.js 5:0-24 11:32-35
-
-webpack 5.99.9 compiled with 1 error in 51 ms
-assets by status 1.98 KiB [cached] 1 asset
-assets by path *.js 1.99 MiB
-  asset bundle.js 1.95 MiB [emitted] (name: main)
-  asset main.dfa7b8f915c5e1408fa8.hot-update.js 38.7 KiB [emitted] [immutable] [hmr] (name: main)
-asset main.dfa7b8f915c5e1408fa8.hot-update.json 28 bytes [emitted] [immutable] [hmr]
-Entrypoint main 1.99 MiB = bundle.js 1.95 MiB main.dfa7b8f915c5e1408fa8.hot-update.js 38.7 KiB
-cached modules 1.71 MiB [cached] 51 modules
-runtime modules 28.7 KiB 15 modules
-javascript modules 33.1 KiB
-  ./src/App.js 2.83 KiB [code generated]
-  ./src/WordTypingGame.js 30.3 KiB [built] [code generated]
-webpack 5.99.9 compiled successfully in 111 ms
+./src/App.js 3.09 KiB [built] [code generated]
+webpack 5.99.9 compiled successfully in 62 ms
