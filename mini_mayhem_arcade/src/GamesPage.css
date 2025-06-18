@@ -1,0 +1,358 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Orbitron:wght@500;700&family=VT323&family=Audiowide&display=swap');
+
+/* ---- Page background ---- */
+.arcade-bg {
+  min-height: 100vh;
+  background: radial-gradient(circle at 70% 12%, #221040 0%, #14152e 80%), #13131b;
+  background-size: cover;
+  color: #fff;
+  padding-bottom: 0;
+  position: relative;
+  letter-spacing: 0.8px;
+}
+
+/* ---- Arcade Titles ---- */
+.arcade-title {
+  font-family: 'Press Start 2P', 'VT323', 'Orbitron', 'Audiowide', monospace;
+  font-size: 2.1rem;
+  text-shadow: 0 0 9px #f100bd, 0 0 18px #6e00ff;
+  font-weight: bold;
+  margin-top: 1.7rem;
+  margin-bottom: 0.4rem;
+  letter-spacing: 2px;
+  text-align: center;
+}
+
+.arcade-header {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.arcade-subtitle {
+  color: #efbfff;
+  font-size: 1.06rem;
+  margin-bottom: 0.35rem;
+  text-shadow: 0 0 6px #43004660;
+}
+
+.neon-badge {
+  background: linear-gradient(90deg,#ffad00bb, #ff41f1cc 80%);
+  border-radius: 1.4em;
+  color: #fff700;
+  font-family: 'Orbitron', monospace;
+  font-size: 0.9em;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 0.08em 0.72em;
+  margin-left: 0.33em;
+  margin-right: 0.33em;
+  box-shadow: 0 0 12px #ee9dff, 0 0 24px #312effa1;
+  animation: neonPulse 1.82s infinite alternate both;
+  display: inline-block;
+  vertical-align: middle;
+}
+.neon-flash { background: linear-gradient(90deg,#ffad0055, #ff41f199 80%); color:#ffffff; }
+
+/* ---- Grid for games ---- */
+.games-grid-container {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 2.5rem;
+  padding: 0 1.3rem;
+  margin-top: 1.5rem;
+}
+.games-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(200px, 1fr));
+  grid-template-rows: repeat(2, 1fr);
+  gap: 2rem 2rem;
+  width: 820px;
+  max-width: 100vw;
+  z-index: 1;
+}
+.arcade-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  background: rgba(40,15,60,0.84);
+  /* glass effect & neon */
+  border-radius: 26px;
+  padding: 1.08em 0.8em 0.75em 0.8em;
+  box-shadow: 0 0 22px 1px #fa22ff66,
+              0 2px 26px 12px rgba(50,20,80,0.16) inset,
+              0 2px 44px 1px #0002;
+  border: 2.6px solid #ffb8e9cc;
+  backdrop-filter: blur(2.6px) saturate(1.22);
+  transition: transform 0.19s cubic-bezier(.4,2,.6,1), box-shadow 0.14s;
+  min-height: 260px;
+  cursor: pointer;
+  will-change: transform;
+  transition: box-shadow 0.21s;
+  margin-bottom: 0.22em;
+  outline: none;
+}
+.arcade-card:hover, .arcade-card:focus {
+  transform: scale(1.044) rotate(-1.5deg);
+  box-shadow: 0 0 34px 2px #aefafd, 0 4px 72px 8px #9411ff90 inset;
+  border-color: #fbbfff;
+}
+.arcade-card-emoji {
+  font-size: 2.75em;
+  text-align: center;
+  filter: drop-shadow(0 0 7px #fbf4f4c2);
+  margin-bottom: 0.25em;
+}
+.arcade-card-title {
+  font-family: 'Orbitron', 'VT323', monospace;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #ffc0ff;
+  text-shadow: 0 0 7px #ff008488, 0 0 24px #fff85f1b;
+  margin-bottom: 0.24em;
+  letter-spacing: 1.1px;
+}
+.arcade-card-desc {
+  font-size: 1.05em;
+  color: #fffbbd;
+  text-shadow: 0 0 4px #cf34ff7c;
+  margin-bottom: 1.1em;
+  min-height: 38px;
+  text-align: center;
+  font-family: 'Audiowide', 'Orbitron', monospace;
+}
+.arcade-play-btn {
+  margin-top: auto;
+  margin-bottom: 8px;
+  background: linear-gradient(90deg,#fb62ff77,#3982fdac 70%);
+  color: #fff;
+  font-family: 'Press Start 2P', 'VT323', monospace;
+  border-radius: 14px;
+  padding: 0.38em 1.15em;
+  font-size: 1.09em;
+  font-weight: 600;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  box-shadow: 0 0 8px #64ffe7,0 0 18px #42009c7c;
+  transition: background 0.23s,transform 0.16s, box-shadow 0.22s;
+}
+.arcade-play-btn:active, .arcade-play-btn:focus {
+  background: linear-gradient(95deg,#00f2ffcc,#ff4beabb 80%);
+  transform: scale(1.055) translateY(-2.4px);
+  box-shadow: 0 0 28px #affcff,0 0 21px #fb48ffbe;
+}
+.arcade-play-btn:hover {
+  background: linear-gradient(90deg,#d8ff24e7,#ee72fad1 90%);
+  color: #3e0044;
+  text-shadow: 0 0 12px #fffdffff;
+}
+.neon-glass-card {}
+
+/* Fun badge styling (already handled in .neon-badge above) */
+
+/* ---- Widget styles (Fact, Joke, Quote) ---- */
+.side-widgets-arcade {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2em;
+  margin-left: 2rem;
+  min-width: 210px;
+  max-width: 320px;
+}
+.arcade-widget {
+  border-radius: 18px;
+  padding: 0.68em 1em 0.5em 1.09em;
+  background: rgba(27,8,54,0.93);
+  box-shadow: 0 0 16px #c8f4ff99, 0 0 9px #fffbbf29;
+  border: 2px solid #e3daff99;
+  color: #fff;
+  font-size: 1.04em;
+  min-height: 78px;
+  min-width: 0;
+  position: relative;
+  font-family: 'Audiowide', 'Orbitron', monospace;
+  letter-spacing: 0.4px;
+  isolation: isolate;
+}
+.arcade-widget .widget-header {
+  color: #19fed2;
+  font-family: 'VT323', monospace;
+  font-size: 1.08em;
+  text-shadow: 0 0 8px #25fffd;
+  margin-bottom: 0.19em;
+  font-weight: bold;
+  text-align: left;
+}
+.arcade-widget .widget-content {
+  min-height: 41px;
+  color: #fff;
+  margin: 0.11em 0 0.4em 0;
+  word-break: break-word;
+  transition: color 0.13s;
+}
+.arcade-widget .widget-content.widget-loading {
+  color: #07eeecba;
+  font-style: italic;
+  opacity: 0.65;
+}
+.widget-spinner {
+  display: inline-block;
+  width: 1.2em;
+  height: 1.2em;
+  border-radius: 50%;
+  border: 3px solid #e1fdfe;
+  border-right-color: #6527ff;
+  animation: widgetSpin 0.85s linear infinite;
+  vertical-align: middle;
+}
+@keyframes widgetSpin {
+  to { transform: rotate(1turn); }
+}
+.widget-refresh-btn {
+  background: none;
+  outline: none;
+  border: none;
+  color: #15edff;
+  font-size: 1.4em;
+  position: absolute;
+  right: 0.54em;
+  top: 0.48em;
+  cursor: pointer;
+  transition: color 0.2s, text-shadow 0.18s;
+  text-shadow: 0 0 12px #22fffd95;
+  filter: drop-shadow(0 0 2px #fff) brightness(1.14);
+}
+.widget-refresh-btn:hover {
+  color: #ffe300;
+  text-shadow: 0 0 18px #fff6b5, 0 0 7px #ffec5fee;
+}
+
+.arcade-widget-joke { border: 2.1px solid #69e2fd88; box-shadow: 0 0 17px #22e1ffc9; }
+.arcade-widget-quote { border: 2.2px solid #ffe2bbcc; box-shadow: 0 0 17px #ffbb0035; }
+.arcade-widget-fact { border: 2.1px solid #abfedddc; box-shadow: 0 0 14px #4effca33; }
+
+/* ---- Surprise Me Button ---- */
+.arcade-footer-row {
+  width: 100vw;
+  text-align: center;
+  padding: 2.6em 0 0.2em 0;
+}
+.arcade-surprise-btn {
+  background: repeating-linear-gradient(130deg,#23ffce 4%,#43007a 18%,#ff2aff 31%,#550cff 38%,#00ffe0 100%); 
+  color: #fff;
+  font-family: 'Press Start 2P', 'VT323', monospace;
+  font-size: 1.26em;
+  font-weight: bold;
+  border: none;
+  outline: 2.6px solid #00ffe9b0;
+  border-radius: 1.5em;
+  padding: 0.72em 2.8em;
+  box-shadow: 0 0 44px #35fff7, 0 0 18px #ff2af157,0 0 1px #8dffe8b0;
+  cursor: pointer;
+  margin-bottom: 0.3em;
+  margin-top: -1.5em;
+  letter-spacing: 1.4px;
+  transition: background 0.18s,outline 0.21s,transform 0.13s, box-shadow 0.14s;
+  position: relative;
+  z-index: 10;
+  overflow: hidden;
+}
+.arcade-surprise-btn .surprise-sparkle {
+  animation: sparkleJump 2.6s infinite alternate-reverse;
+  display: inline-block;
+}
+.arcade-surprise-btn:focus,
+.arcade-surprise-btn:hover {
+  background: repeating-linear-gradient(130deg,#ffe803cd 3%,#4c1cff 28%,#fd5abb 51%,#20ffd4 100%);
+  color: #094355;
+  outline: 2.6px solid #fa50ff;
+  transform: scale(1.073) rotate(-0.6deg);
+  text-shadow: 0 0 14px #fff5e6;
+}
+@keyframes sparkleJump {
+  0% { transform: translateY(0) scale(1);}
+  22% { transform: translateY(-6px) scale(1.15);}
+  36% { transform: translateY(4px) scale(1.02);}
+  80% { transform: translateY(-1px) scale(1.08);}
+  100% {transform: translateY(0) scale(1);}
+}
+.surprise-jump {
+  animation: arcadeJump 0.34s cubic-bezier(.76,-0.38,.8,2.3) 1;
+}
+@keyframes arcadeJump {
+  0% { transform: scale(1) rotate(0);}
+  12% { transform: scale(1.18) rotate(-3deg);}
+  35% { transform: scale(0.90) rotate(2deg);}
+  58% { transform: scale(1.22) rotate(-4.8deg);}
+  86% { transform: scale(0.93) rotate(2.1deg);}
+  100% { transform: scale(1) rotate(0);}
+}
+.shakey-pop {
+  animation: shakeyPop 0.46s cubic-bezier(.57,-0.02,.95,1.4) 1;
+}
+@keyframes shakeyPop {
+  0% { transform: scale(1) rotate(0);}
+  17% { transform: scale(1.1) rotate(-2deg);}
+  35% { transform: scale(0.92) rotate(1deg);}
+  53% { transform: scale(1.11) rotate(-1.8deg);}
+  70% { transform: scale(0.97) rotate(1deg);}
+  100% { transform: scale(1) rotate(0);}
+}
+
+/* ---- Footer Fun ---- */
+.arcade-footer-fun {
+  background: transparent;
+  text-align: center;
+  padding: 1em 0 1.7em 0;
+  color: #ececec;
+  font-family: 'VT323', 'Orbitron', monospace;
+  font-size: 1.05em;
+  letter-spacing: 0.7px;
+  opacity: 0.84;
+}
+.footer-brand {
+  color: #ff6ff5;
+  margin-left: 0.72em;
+  text-shadow: 0 0 11px #e100c6b5, 0 0 24px #ffbffd6b;
+  letter-spacing: 1.4px;
+  font-family: 'Orbitron', 'VT323', monospace;
+  font-size: 0.9em;
+}
+.footer-flash {
+  animation: neonPulse 1.7s infinite alternate;
+  color: #ff8fff;
+}
+@keyframes neonPulse {
+  from { filter: brightness(1.0) drop-shadow(0 0 4px #e3ffdb);}
+  to { filter: brightness(1.4) drop-shadow(0 0 14px #ffbaff); }
+}
+
+/* ---- Responsiveness ---- */
+@media (max-width: 1180px) {
+  .games-grid { width: 640px; grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(3, 1fr);}
+  .games-grid-container { gap: 1.2rem;}
+}
+@media (max-width: 860px) {
+  .games-grid { width: 96vw; grid-template-columns: 1fr; grid-template-rows: none;}
+  .side-widgets-arcade { min-width: 170px; }
+  .arcade-title { font-size: 1.28rem;}
+}
+@media (max-width: 730px) {
+  .games-grid-container {
+    flex-direction: column; gap: 1.4rem; align-items: center;
+  }
+  .side-widgets-arcade {flex-direction: row; margin: 1em 0 1.2em 0; gap: 1.2em;}
+  .arcade-header { margin-bottom: 0.8em;}
+}
+@media (max-width: 600px) {
+  .games-grid {width: 97vw;}
+  .arcade-card { min-width: 0; max-width: 98vw; padding: 0.9em 0.51em; }
+  .arcade-title { font-size: 1.09rem;}
+  .arcade-play-btn { font-size: 0.95rem; }
+  .arcade-card-title { font-size: 1.1rem;}
+  .arcade-footer-row { padding: 1.6em 0 0.2em 0;}
+}
