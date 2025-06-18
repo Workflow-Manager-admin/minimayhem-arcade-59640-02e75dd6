@@ -1,603 +1,603 @@
-import React, { useState, useEffect, useRef, useCallback, useMemo, Suspense, lazy } from "react";
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+  useRef,
+  useCallback,
+  lazy,
+  Suspense,
+} from "react";
+import { useNavigate } from "react-router-dom";
 import Navbar from "./Navbar";
 
-// PUBLIC_INTERFACE
 /**
- * MiniMayhem Arcade Landing Page (Optimized)
- * - Enhanced Navbar (with Settings dropdown)
- * - Hero Section: animated pixel/arcade background, intro text, CTA buttons
- * - Feature Grid: six games/cards, icons, descriptions, play buttons, effects
- * - Fun API Section: joke/quote/fun fact (lazy-loaded for perf)
- * - Vibrant Footer with arcade styling
- * Uses pixel/arcade fonts and responsive layout. Performance improvements: memo, lazy, split render, CSS animation, reduced unnecessary effect triggers.
+ * Arcade font, pixel/neon CSS, injected for arcade style.
  */
-const arcadeFonts = `
-@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Orbitron:wght@700&display=swap');
-.arcade-font      { font-family: 'Press Start 2P', 'Orbitron', 'VT323', Montserrat, monospace !important; }
-.arcade-hero      { font-family: 'Press Start 2P', 'Orbitron', 'VT323', Courier, monospace !important; }
-.arcade-subtitle  { font-family: 'Orbitron', 'VT323', sans-serif; letter-spacing:2px; }
-.arcade-footer    { font-family: 'VT323', 'Press Start 2P', Geo, monospace; }
+const ARCADE_FONTS = `
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=Bangers&family=VT323&display=swap');
+.arcade-font { font-family: 'VT323','Bangers','Orbitron',monospace!important; }
+.arcade-gradient-txt {
+  background: linear-gradient(95deg, #FFD600 0%, #ff24e5 50%, #43E9FF 99%);
+  color: transparent;
+  -webkit-background-clip: text; background-clip: text;
+  text-shadow: 0 2px 13px #5118ea6a,0 0 25px #fff05533;
+}
 `;
 
-const arcadeCss = `
-.arcade-bg-css-fadein {
-  animation: arcadeBgFade 1.35s cubic-bezier(.79,-0.15,.39,1.41) both;
+// Enhanced main CSS for gradients, pixel shadows, animations.
+const ARCADE_CSS = `
+.arcade-landing-bg {
+  background: linear-gradient(120deg, #12003A 0%, #5118ea 35%, #FFD600 99%);
+  min-height: 100vh;
+  overflow-x: hidden;
+  transition: background 0.7s;
 }
-@keyframes arcadeBgFade {
-  0% { opacity: 0; filter: brightness(0.75) blur(2px);}
-  75% { opacity: 0.8; filter: blur(0.3px);}
-  100% { opacity: 1; filter: none;}
+.arcade-navbar-pad { height:64px;}
+.animated-welcome-section {
+  padding:124px 0 38px 0;
+  text-align: center;
+  background: linear-gradient(90deg,#5118ea 10%,#FFD600 100%);
+  position: relative;
+  overflow: hidden;
 }
-.arcade-bg-animated {
-  position: absolute;
-  top:0; left:0; right:0; bottom:0;
-  z-index:0; pointer-events:none;
-  overflow:hidden;
-}
-.arcade-bg-pixels {
-  position: absolute;
-  top:0; left:0; right:0; bottom:0;
-  z-index:0; pointer-events: none;
-  opacity: 0.13;
+.arcade-logo-pop {
+  font-family:'Bangers','Orbitron',cursive;
+  font-size:3.2rem;
+  color:#FFD600;
+  filter:drop-shadow(0 3px 20px #43e9ff80);
+  letter-spacing:0.1em;
+  user-select:none;
+  margin-bottom:0.5rem;
+  text-shadow:0 2px 11px #1a003a80,0 0 17px #ffd60080;
 }
 @media (max-width: 600px) {
-  .arcade-hero-title { font-size: 1.5rem !important; }
+  .arcade-logo-pop {font-size:2.1rem;}
+  .welcome-main-title {font-size:1.2rem;}
 }
-.hero-alt-glow {
-  text-shadow:
-    0 2px 4px #00fff7,
-    2px 3px 0 #0c188b96,
-    0 0 10px #fff09d, 
-    0 6px 40px #e708fb90;
-}
-.arcade-feature-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(215px,1fr));
-  gap: 36px 28px;
-  margin: 38px 0 40px 0;
-  z-index:2;
-}
-.arcade-feature-card {
-  background: linear-gradient(141deg,#272473 40%,#a820c5 100%);
-  border: 2.7px solid #FFDE68c8;
-  border-radius: 15px;
-  box-shadow: 0 10px 32px 0 #1a09ab49, 0 2.5px 0 #ff5ee480;
-  color: #fff;
-  text-align: center;
-  padding: 32px 20px 22px 20px;
-  position: relative;
-  transition: transform 0.15s, box-shadow 0.2s;
-  cursor: pointer;
-  font-family: 'Orbitron', 'Press Start 2P', monospace;
-}
-.arcade-feature-card:hover, .arcade-feature-card:focus {
-  transform: translateY(-7px) scale(1.032) rotate(-1deg);
-  box-shadow: 0 18px 44px 3px #ffe18560,0 1.5px 35px #00e5ff33;
-  border-color: #f806c4;
-}
-.arcade-feature-icon {
-  font-size: 2.7rem;
-  margin-bottom: 10px;
-  filter: drop-shadow(0 2px 7px #ffb7fa80);
-}
-.arcade-feature-title {
-  font-size: 1.15rem;
-  margin: 9px 0 7px 0;
-  letter-spacing: 1.2px;
+.welcome-main-title {
+  font-family:'Orbitron','VT323',sans-serif;
+  font-size:2rem;
   font-weight:900;
+  color:#fff;letter-spacing:0.095em;
+  margin:0.4rem 0 0.21rem 0;
+  text-shadow:0 2px 8px #ffd60055;
+  background: linear-gradient(93deg,#ffd600,#1ecfff 70%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
 }
-.arcade-feature-desc {
-  font-size: 1rem;
-  color: #cdf6ff;
-  margin-bottom: 16px;
-  min-height: 56px;
+.daily-challenge-box {
+  background:linear-gradient(95deg,#3624ab 0,#e900d622 90%);
+  border:2px solid #FFD600;
+  color:#ffd600;
+  margin: 1.45rem auto 1.2rem auto;
+  padding:1.2rem 1.5rem;
+  border-radius:18px;
+  box-shadow:0 3px 23px #5918eaff, 0 2.2px 21px #ffd60044;
+  max-width:380px;
+  font-family:'VT323','Bangers',monospace;
+  font-size:1.2rem;
+  display:flex;flex-direction:column;align-items:center;
+  position:relative;min-height:60px;
+  animation: popIn .7s cubic-bezier(.73,.08,.61,1.19);
 }
-.arcade-card-btn {
-  background: linear-gradient(98deg, #FFD600 0%, #40c6ff 100%);
+@keyframes popIn {0%{scale:0.9;opacity:0}100%{scale:1;opacity:1}}
+.daily-challenge-label {
+  color:#fff9;
+  font-size:1.1rem;font-weight:700;
+  margin-bottom:0.12rem;
+  letter-spacing:0.09em;
+}
+.arcade-surprise-btn {
+  background:linear-gradient(90deg,#FFD600,#43E9FF 100%);
+  color:#22007a;
   border: none;
-  box-shadow: 0 2px 8px #57d7ff60;
-  font-family: 'Press Start 2P', 'VT323', monospace;
-  text-transform: uppercase;
-  color: #0b0157;
-  font-size: 0.89rem;
-  font-weight: 900;
-  padding: 12px 24px;
   border-radius: 8px;
-  margin-top: 8px;
-  cursor: pointer;
-  letter-spacing: 1.7px;
-  transition: box-shadow 0.19s, transform 0.12s;
-}
-.arcade-card-btn:hover, .arcade-card-btn:focus {
-  box-shadow: 0 0 25px #00ffd0a9, 0 7px 22px #ffd60080;
-  transform: scale(1.07) rotate(1deg);
-  background: linear-gradient(87deg, #ff43ef 10%, #ffd600 100%);
-  color: #64008b;
-}
-.arcade-funapi-section {
-  margin: 52px 0 58px 0;
-  text-align: center;
-  z-index:2;
-}
-.arcade-funapi-bubble {
-  background: linear-gradient(98deg,#3a51ea8f, #e900d655 90%);
-  border-radius: 17px;
-  display: inline-block;
-  margin: 0 auto;
-  padding: 27px 38px 22px 38px;
-  box-shadow: 0 8px 32px #00fff52c, 0 3px 17px #bd00ff47;
-  color: #fff;
-  font-size: 1.25rem;
-  max-width: 460px;
-  font-family: 'Orbitron','Press Start 2P',monospace;
-  font-weight:600;
-  position:relative;
-  border: 2px solid #16fff4;
-}
-.arcade-funapi-btn {
-  margin-top:14px;
-  padding:7px 22px;
-  border-radius:6px;
-  border:none;
-  font-size:1rem;
-  background:linear-gradient(80deg,#FFD600,#8e4fff 90%);
-  color:#070045;
-  font-family:'Press Start 2P','VT323',monospace;
-  font-weight:800;
+  font-family:'Orbitron','Bangers',monospace;
+  font-size:1.1rem;
+  font-weight:900;
+  padding:0.7em 2em;
+  margin-top:1rem;
   cursor:pointer;
-  transition:background 0.18s,transform 0.14s;
+  box-shadow:0 2px 14px #40ff8250,0 0.5px 18px #ffd60055;
+  transition:background 0.2s,box-shadow 0.21s,transform 0.14s;
+  letter-spacing:0.17em;
+  outline: none;
 }
-.arcade-funapi-btn:hover {
-  background:linear-gradient(94deg,#43E9FF,#ffd600 90%);
-  color:#3200ae;
-  transform:scale(1.1);
+.arcade-surprise-btn:hover,.arcade-surprise-btn:focus{
+  background: linear-gradient(98deg,#ff24e5,#FFD600 100%);
+  color:#fff;
+  box-shadow:0 0 33px #FFD60080,0 6px 21px #43E9FF66;
+  transform:scale(1.06) rotate(-1deg);
 }
-.arcade-footer-main {
-  background: linear-gradient(90deg,#2d267b 0,#a724eb 41%,#ffb700 100%);
+/** Games Grid **/
+.games-preview-section {margin:0 auto 31px auto;text-align:center;}
+.arcade-games-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
+  gap: 30px 18px;
+  max-width: 900px;
+  margin:35px auto 10px auto;
+}
+@media (max-width:650px){.arcade-games-grid{ gap:16px 6px;}}
+.game-card {
+  background:linear-gradient(141deg,#272473 40%,#a820c5 100%);
+  border:2.7px solid #FFD600c8;
+  border-radius:16px;
+  box-shadow:0 7px 22px #1a09ab39,0 2px 0 #ff43ef50;
   color: #fff;
-  margin-top: 60px;
-  padding:44px 0 30px 0;
-  border-top: 4px solid #ffd600;
+  text-align: center;
+  padding:27px 13px 16px 13px;
+  position:relative;
+  transition:transform .14s,box-shadow .21s;
+  cursor:pointer;
+  font-family:'Orbitron','VT323',monospace;
+  overflow:hidden;
+}
+.game-card:hover,.game-card:focus {
+  transform: translateY(-5px) scale(1.035) rotate(-1deg);
+  box-shadow:0 12px 40px 2px #ffe18561,0 5px 23px #43e9ff3a;
+  border-color:#ff24e5;
+  z-index:4;
+}
+.game-icon {font-size:2.65rem;margin-bottom:10px;text-shadow:0 2px 12px #ffd60040;}
+.game-title {font-size:1.1rem;font-weight:700;margin:7px 0 3px 0;letter-spacing:1.1px;}
+.game-desc {font-size:1rem;color:#cdf6ffcc;margin-bottom:15px;min-height:48px;}
+.game-play-btn {
+  background: linear-gradient(87deg, #FFD600 0%, #43E9FF 100%);
+  border:none;border-radius:7px;
+  font-family:'Bangers','VT323',monospace;text-transform:uppercase;
+  color: #22007a;font-size:.93rem;font-weight:900;
+  padding:10px 14px;cursor:pointer;letter-spacing:1.5px;
+  margin-top:0.6rem;transition:box-shadow 0.13s,transform .11s;
+  box-shadow:0 0 14px #ffd60080, 0 1px 13px #43E9FF44;
+  outline: none;
+}
+.game-play-btn:hover,.game-play-btn:focus {
+  background:linear-gradient(89deg,#ff24e5,#FFD600 100%);
+  color:#fff;box-shadow:0 0 17px #FFD60090;
+  transform:scale(1.09) rotate(1.8deg);
+}
+.live-fun-api-wrap {
+  margin:55px 0 40px 0;
   text-align:center;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  flex-direction:column;
-  font-size:1.18rem;
-  box-shadow: 0 -5px 48px #ab00fd34;
-  font-family: 'VT323', 'Orbitron', monospace;
+  z-index:3;
   position:relative;
 }
-.arcade-footer-social {
-  margin: 17px 0 4px 0;
-  display: flex;
-  gap: 24px;
-  justify-content: center;
-  font-size: 2.1rem;
+.fun-fact-bubble {
+  background:linear-gradient(95deg,#3624ab55 0%,#e900d650 90%);
+  border-radius:17px;
+  padding:27px 37px 18px 37px;
+  border:2.4px solid #16fff4;
+  color:#f6fffd;
+  font-size:1.24rem;font-family:'Orbitron','Bangers',monospace;
+  font-weight:700;
+  min-height:49px;
+  display:inline-block;
+  box-shadow:0 5px 23px #00ffd52e,0 2px 14px #b700ff33;
 }
-.arcade-footer-social a {
-  color: #fffa;
-  transition: color 0.18s, text-shadow 0.15s;
-  text-decoration: none;
-  filter: drop-shadow(0 0 7px #ffd60070);
+.fun-api-btn {
+  margin-top:14px;padding:8px 25px;border-radius:6px;border:none;
+  font-size:1.06rem;
+  background:linear-gradient(90deg,#FFD600,#43E9FF 90%);
+  color:#22007a;
+  font-family:'VT323','Bangers',monospace;
+  font-weight:800;cursor:pointer;letter-spacing:0.05em;
+  transition:background 0.14s,transform 0.13s;
+  outline:none;
 }
-.arcade-footer-social a:hover {
-  color: #ffd600;
-  text-shadow: 0 0 22px #fff355, 0 2px 20px #b700ff80;
+.fun-api-btn:hover,.fun-api-btn:focus{
+  background:linear-gradient(94deg,#ff24e5,#FFD600 80%);
+  color:#fff;transform:scale(1.07);
 }
-.arcade-footer-links {
-  margin-top: 12px;
-  font-size: 0.97rem;
-  opacity:0.81;
-  gap: 18px;
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
+.arcade-footer-vibrant {
+  background:linear-gradient(90deg,#5118ea 0,#a724eb 52%,#FFD600 100%);
+  color:#fff;margin-top:50px;padding:35px 0 24px 0;border-top:4px solid #ffd600;
+  text-align:center;display:flex;flex-direction:column;align-items:center;
+  font-size:1.18rem;
+  font-family:'VT323','Orbitron',monospace;position:relative;
+  box-shadow:0 -3px 28px #ab00fd22;
 }
-.arcade-footer-links a {
-  color: #FFE185; 
-  margin: 0 8px;
-  text-underline-offset: 2.8px;
-  text-decoration: underline dotted #FFF955;
-  transition: color 0.16s;
+.footer-gradient-txt {
+  background:linear-gradient(95deg,#ffd600,#43E9FF 86%);
+  background-clip:text;color:transparent;-webkit-background-clip:text;
+  font-size:1.08em;font-weight:900;text-shadow:0 1.2px 8px #FFD60080;
 }
-.arcade-footer-links a:hover {
-  color: #52FFD6;
-}
-@media (max-width:600px){
-  .arcade-feature-grid { gap: 23px 7px; }
-  .arcade-feature-card { font-size:0.93rem;padding:19px 7px 15px 7px;}
-  .arcade-footer-main { font-size:1rem;padding:27px 0 21px 0; }
-}
+.footer-socials {margin:17px 0 4px 0;display:flex;gap:22px;justify-content:center;font-size:2.1rem;}
+.footer-socials a {color:#fffa;transition:color .18s,text-shadow .17s;text-decoration:none;filter:drop-shadow(0 0 5px #ffd6007b);}
+.footer-socials a:hover {color:#FFD600;text-shadow:0 0 10px #FFD600aa;}
+.footer-links {margin-top:10px;font-size:0.97rem;opacity:0.85;gap:14px;display:flex;justify-content:center;flex-wrap:wrap;}
+.footer-links a {color:#FFE185;margin:0 7px;text-decoration:underline dotted #FFD600;text-underline-offset:2px;transition:color .13s;}
+.footer-links a:hover{color:#52FFD6;}
 `;
 
-const featureGames = [
+const ARCADE_GAMES = [
   {
-    icon: "👾", title: "Alien Blitz", desc: "Blast pixel invaders in a retro shoot-em-up!", route: "/games/alien-blitz"
+    icon: "🧩",
+    title: "Block Puzzle",
+    desc: "Arrange falling blocks to clear lines and score high!",
+    route: "/games/block-puzzle",
   },
   {
-    icon: "🏎️", title: "Pixel Kart", desc: "Race in 8-bit style & power up your arcade car.", route: "/games/pixel-kart"
+    icon: "🧠",
+    title: "Memory Match",
+    desc: "Flip and match cards as fast as possible!",
+    route: "/games/memory-match",
   },
   {
-    icon: "🧩", title: "Match Mania", desc: "Solve snapping tile puzzles against the clock.", route: "/games/match-mania"
+    icon: "⚡",
+    title: "Reaction Speed",
+    desc: "Test your reflexes in this fast-tap challenge.",
+    route: "/games/reaction-speed",
   },
   {
-    icon: "🦘", title: "Lava Hopper", desc: "Time your jumps! Arcade platform action on hot lava.", route: "/games/lava-hopper"
+    icon: "🦘",
+    title: "Lava Hopper",
+    desc: "Jump between platforms over boiling lava.",
+    route: "/games/lava-hopper",
   },
   {
-    icon: "🥚", title: "Egg Drop", desc: "Catch eggs in baskets. The more you catch, the faster it gets!", route: "/games/egg-drop"
+    icon: "🎯",
+    title: "Aim Trainer",
+    desc: "Sharpen your aim with ever-faster targets.",
+    route: "/games/aim-trainer",
   },
   {
-    icon: "🧨", title: "Bomb Squad", desc: "Defuse pixel bombs before time is up. Fast reflexes needed!", route: "/games/bomb-squad"
-  }
+    icon: "🎲",
+    title: "Quick Dice",
+    desc: "Predict, roll, and beat the odds against the clock.",
+    route: "/games/quick-dice",
+  },
+];
+
+// All games for random challenge/surprise me pool.
+const MINI_CHALLENGES = [
+  {
+    game: "Block Puzzle",
+    description: "Clear 8+ lines before you lose!",
+    route: "/games/block-puzzle",
+  },
+  {
+    game: "Memory Match",
+    description: "Finish a set in under 40 seconds.",
+    route: "/games/memory-match",
+  },
+  {
+    game: "Reaction Speed",
+    description: "Score 10+ taps in 18 seconds!",
+    route: "/games/reaction-speed",
+  },
+  {
+    game: "Lava Hopper",
+    description: "Survive 30 jumps in a run.",
+    route: "/games/lava-hopper",
+  },
+  {
+    game: "Aim Trainer",
+    description: "Hit 15 targets without missing.",
+    route: "/games/aim-trainer",
+  },
+  {
+    game: "Quick Dice",
+    description: "Roll double sixes within 6 turns.",
+    route: "/games/quick-dice",
+  },
 ];
 
 const SOCIALS = [
-  { icon: <span role="img" aria-label="GitHub">🐙</span>, url: "https://github.com/", title: "GitHub" },
-  { icon: <span role="img" aria-label="Twitter">🐦</span>, url: "https://twitter.com/", title: "Twitter" },
-  { icon: <span role="img" aria-label="Discord">💬</span>, url: "https://discord.com/", title: "Discord" }
+  {
+    icon: (
+      <span role="img" aria-label="GitHub">
+        🐙
+      </span>
+    ),
+    url: "https://github.com/",
+    title: "GitHub",
+  },
+  {
+    icon: (
+      <span role="img" aria-label="Twitter">
+        🐦
+      </span>
+    ),
+    url: "https://twitter.com/",
+    title: "Twitter",
+  },
+  {
+    icon: (
+      <span role="img" aria-label="Discord">
+        💬
+      </span>
+    ),
+    url: "https://discord.gg/",
+    title: "Discord",
+  },
 ];
 
-// Small Animated Pixel Dot Field for Background
-const AnimatedArcadeBg = React.memo(function AnimatedArcadeBg() {
-  const canvasRef = useRef();
+/*******************************
+ * COMPONENTS
+ ******************************/
+
+/**
+ * PUBLIC_INTERFACE
+ * Animated Welcome Section with persistent daily challenge and Surprise Me button.
+ */
+const WelcomeSection = React.memo(function WelcomeSection({ onSurprise }) {
+  // Daily challenge logic with localStorage rotation at UTC day
+  const [challenge, setChallenge] = useState(null);
+
   useEffect(() => {
-    const canvas = canvasRef.current;
-    const ctx = canvas?.getContext && canvas.getContext("2d");
-    if (!canvas || !ctx) return;
-    let running = true;
-    function resizeCanvas() {
-      canvas.width = window.innerWidth;
-      canvas.height = Math.max(340, window.innerHeight * 0.58);
+    const key = "arcade_daily_challenge";
+    // Day in UTC
+    const today = new Date().toISOString().slice(0, 10);
+    const last = localStorage.getItem(key + "_date");
+    let idx = +localStorage.getItem(key + "_idx");
+    if (!last || last !== today || idx >= MINI_CHALLENGES.length || idx < 0) {
+      idx = Math.floor(Math.random() * MINI_CHALLENGES.length);
+      localStorage.setItem(key + "_date", today);
+      localStorage.setItem(key + "_idx", idx.toString());
     }
-    resizeCanvas();
-    window.addEventListener("resize", resizeCanvas);
-
-    // Colored pixel objects
-    const colors = ["#FFD600","#00FFF0","#FF43EF","#92FF51","#e900d6","#ffd0f5"];
-    let pxs = Array.from({length:85},()=>({
-      x:Math.random()*canvas.width,
-      y:Math.random()*canvas.height,
-      s:2+Math.random()*2,
-      c:colors[Math.floor(Math.random()*colors.length)],
-      dx: (Math.random()<0.5?-0.2:0.2)*(0.8+Math.random()*1),
-      dy: (Math.random()<0.5?-0.2:0.2)*(0.3+Math.random()*0.6)
-    }));
-    function draw() {
-      ctx.clearRect(0,0,canvas.width,canvas.height);
-      pxs.forEach(p=>{
-        ctx.beginPath();
-        ctx.arc(p.x,p.y,p.s,0,2*Math.PI);
-        ctx.fillStyle=p.c;
-        ctx.filter="brightness(1.23) blur(0.2px)";
-        ctx.shadowColor=p.c;
-        ctx.shadowBlur=11;
-        ctx.globalAlpha=0.93;
-        ctx.fill();
-        // Move
-        p.x+=p.dx; p.y+=p.dy;
-        // Edge bounce
-        if (p.x<0||p.x>canvas.width) p.dx*=-1;
-        if (p.y<0||p.y>canvas.height) p.dy*=-1;
-      });
-      ctx.globalAlpha=1; ctx.filter="none";
-      if (running) requestAnimationFrame(draw);
-    }
-    requestAnimationFrame(draw);
-    return () => { running=false; window.removeEventListener("resize", resizeCanvas); };
+    setChallenge(MINI_CHALLENGES[idx]);
   }, []);
-  return (
-    <canvas
-      ref={canvasRef}
-      className="arcade-bg-animated arcade-bg-css-fadein"
-      style={{
-        width: "100vw",
-        height: 340,
-        minHeight: 200,
-        background: "radial-gradient(circle, #5118ea 37%, #ffa90064 100%)",
-        opacity: 0.32,
-      }}
-      tabIndex={-1}
-      aria-hidden="true"
-      loading="lazy"
-    />
-  );
-});
 
-// Enhanced Navbar with Settings Dropdown
-const NavbarWithSettings = React.memo(function NavbarWithSettings() {
-  const [open, setOpen] = useState(false);
-  const settingsRef = useRef();
-  // Basic click-outside closing
-  useEffect(() => {
-    function onDoc(e) {
-      if (settingsRef.current && !settingsRef.current.contains(e.target)) setOpen(false);
-    }
-    if (open) window.addEventListener("mousedown", onDoc);
-    return()=>window.removeEventListener("mousedown", onDoc);
-  }, [open]);
   return (
-    <div style={{position:"relative",zIndex:11}}>
-      <Navbar />
-      {/* Settings button and dropdown, positioned absolute in top-right corner */}
-      <div style={{
-        position:"absolute",right:23,top:13,zIndex:1003,minWidth:90,fontFamily:"'Orbitron','Press Start 2P',sans-serif"
-      }} ref={settingsRef}>
-        <button
-          aria-label="Open settings"
-          aria-haspopup="menu"
-          onClick={()=>setOpen(o=>!o)}
-          style={{
-            background:"linear-gradient(94deg,#FFD600,#8e4fff 90%)",color:"#3200ae",
-            fontWeight:900,fontSize:"1rem",padding:"8px 15px 9px 15px",borderRadius:6,border:"none",cursor:"pointer",
-            boxShadow:"0 0 10px #ffd60080", marginLeft:7,outline:open?"3px solid #ff43ef":"none"
-          }}
-          tabIndex={0}
-        >⚙️ Settings</button>
-        {open &&
-          <div style={{
-            background: "linear-gradient(104deg,#3724ab 0,#a120b6 90%)",
-            position: "absolute", right: 0, top: 44,
-            borderRadius: 14, boxShadow: "0 13px 38px #6b16ab60,0 1px 15px #ffd60055",
-            border: "2.5px solid #FFD600", minWidth: 183, padding: "13px 17px", display: "flex", flexDirection: "column", gap: "8px"
-          }}>
-            <button style={{
-              background: "none", border: "none", color: "#fffa", fontWeight: 600, textAlign: "left", cursor: "pointer", fontSize: "1.05rem", borderRadius: "8px", padding: "6px 2px 6px 7px",
-              fontFamily: "'Orbitron','VT323',monospace", transition: "background .18s", outline: "none"
-            }}
-              onClick={() => { alert("Settings coming soon!"); setOpen(false); }}>🎨 Theme</button>
-            <button style={{
-              background: "none", border: "none", color: "#fffa", fontWeight: 600, textAlign: "left", cursor: "pointer", fontSize: "1.05rem", borderRadius: "8px", padding: "6px 2px 6px 7px",
-              fontFamily: "'Orbitron','VT323',monospace", transition: "background .18s", outline: "none"
-            }}
-              onClick={() => { alert("Sound coming soon!"); setOpen(false); }}>🔊 Sound</button>
-            <button style={{
-              background: "none", border: "none", color: "#fffa", fontWeight: 600, textAlign: "left", cursor: "pointer", fontSize: "1.05rem", borderRadius: "8px", padding: "6px 2px 6px 7px",
-              fontFamily: "'Orbitron','VT323',monospace", transition: "background .18s", outline: "none"
-            }}
-              onClick={() => { alert("Profile coming soon!"); setOpen(false); }}>👤 Profile</button>
-          </div>
-        }
+    <section className="animated-welcome-section arcade-font">
+      <div className="arcade-logo-pop" tabIndex={0}>
+        <span role="img" aria-label="controller" style={{ fontSize: "2.2rem" }}>🕹️</span>
+        MiniMayhem Arcade
       </div>
-    </div>
-  );
-});
+      <h2 className="welcome-main-title arcade-gradient-txt">Welcome, Arcade Explorer!</h2>
 
-// Thin suspense fallback for API
-const FunAPILoader = () => (
-  <section className="arcade-funapi-section" style={{ color: "#c1e9fc", fontFamily: "'Orbitron','VT323',monospace" }}>
-    <div className="arcade-funapi-bubble arcade-font" style={{ opacity: 0.65 }}>
-      Loading fun fact...
-    </div>
-  </section>
-);
-
-// Fun API: Random Joke or "fun fact" (lazy-loaded to avoid heavy-initial render)
-const FunAPI = React.memo(function FunAPI() {
-  const [result, setResult] = useState({ text: "Loading a fun fact for you..." });
-  const [loading, setLoading] = useState(false);
-  // Memoize fetch callback to avoid re-creation
-  const fetchFact = useCallback(async () => {
-    setLoading(true);
-    let url = Math.random() > 0.4
-      ? "https://uselessfacts.jsph.pl/api/v2/facts/random"
-      : "https://official-joke-api.appspot.com/random_joke";
-    try {
-      const r = await fetch(url);
-      if (url.includes("uselessfacts")) {
-        const data = await r.json();
-        setResult({ text: data.text });
-      } else {
-        const data = await r.json();
-        setResult({ text: `${data.setup} ${data.punchline}` });
-      }
-    } catch (e) {
-      // Fallback: Random fun fact or joke
-      const fallback = [
-        "Did you know? The very first video game was created in 1958!",
-        "Fun fact: The highest scoring Pac-Man game is 3,333,360 points.",
-        "Joke: Why did the pixel cross the screen? To get to 'the other byte'!",
-        "In 1980, more arcade machines than pizza places existed in the US.",
-        "The world’s largest arcade is in Brookfield, IL — over 900 games!"
-      ];
-      setResult({ text: fallback[Math.floor(Math.random() * fallback.length)] });
-    }
-    setLoading(false);
-  }, []);
-  // useEffect, deps []
-  useEffect(() => { fetchFact(); }, [fetchFact]);
-  return (
-    <section className="arcade-funapi-section">
-      <div className="arcade-funapi-bubble arcade-font" tabIndex="0" aria-live="polite">
-        {result.text}
-        <br />
-        <button onClick={fetchFact} className="arcade-funapi-btn" disabled={loading}>
-          {loading ? "Loading..." : "😃 New Fun Fact"}
-        </button>
+      <div className="daily-challenge-box">
+        <span className="daily-challenge-label">🎯 Daily Mini Challenge</span>
+        {challenge ? (
+          <>
+            <div>
+              <b>{challenge.game}</b>: {challenge.description}
+            </div>
+          </>
+        ) : (
+          <div>Loading today's challenge...</div>
+        )}
       </div>
+      <button className="arcade-surprise-btn" onClick={onSurprise} tabIndex={0}>
+        🤩 Surprise Me!
+      </button>
     </section>
   );
 });
 
-// Prepare lazy-loading for FunAPI section, avoid render until in view
-const LazyFunAPI = lazy(() =>
-  // intentional late import - simple stub since FunAPI is in same file
-  Promise.resolve({ default: FunAPI })
-);
-
 /**
- * Hook to check if an element is in the viewport.
- * Returns: [isVisible, ref]
+ * PUBLIC_INTERFACE
+ * Animated, responsive Game Cards Grid for 6 games, with play buttons
  */
-function useVisibility(threshold = 0.33) {
-  const [visible, setVisible] = useState(false);
-  const ref = useRef();
-  useEffect(() => {
-    const current = ref.current;
-    if (!current) return;
-    let observer;
-    if ("IntersectionObserver" in window) {
-      observer = new window.IntersectionObserver(
-        ([entry]) => setVisible(entry.isIntersecting || entry.intersectionRatio > 0),
-        { threshold }
-      );
-      observer.observe(current);
-    } else {
-      // Always visible fallback
-      setVisible(true);
-    }
-    return () => { if (observer && current) observer.unobserve(current); };
-  }, [threshold]);
-  return [visible, ref];
-}
-
-// Hero Section
-const HeroSection = React.memo(function HeroSection() {
-  return (
-    <header style={{
-      minHeight: 390,
-      padding: "118px 0 46px 0", position: "relative", textAlign: "center", zIndex: 1,
-      background: "linear-gradient(90deg,#5118ea 10% ,#ffd600 100%)"
-    }}>
-      <AnimatedArcadeBg />
-      <h1
-        className="arcade-hero arcade-hero-title hero-alt-glow"
-        style={{
-          fontSize: "2.25rem",
-          fontWeight: 900,
-          color: "#ffeb3b",
-          letterSpacing: "1.7px",
-          margin: 0,
-          zIndex: 2,
-        }}
-      >MINIMAYHEM <span style={{ color: "#00fff0", textShadow: "0 2px 10px #e900d633" }}>ARCADE</span></h1>
-      <div className="arcade-subtitle" style={{
-        fontSize: "1.12rem", color: "#fff", margin: "13px 0 7px 0", fontWeight: 700, textShadow: "0 2px 11px #601eaf70"
-      }}>
-        <span style={{ background: "linear-gradient(95deg,#ffd600, #ff43ef 65%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Play 6 crazy minigames</span> in your browser!
-      </div>
-      <div
-        aria-label="MiniMayhem Arcade tagline"
-        style={{
-          fontSize: "1.03rem",
-          color: "#f6dad8",
-          maxWidth: 440,
-          margin: "11px auto 18px auto",
-          textShadow: "0 2px 9px #0aaaec29,0 0.5px 0 #fff",
-          fontFamily: "'VT323','Press Start 2P',monospace"
-        }}
-      >
-        Beat the highscore, challenge your friends, and experience a burst of color & fun. <br />
-        Fast loads, no install. All free!
-      </div>
-      <div style={{ margin: "19px 0 0 0", display: "flex", justifyContent: "center", gap: 16, flexWrap: "wrap", zIndex: 2 }}>
-        <a href="#feature-grid" className="arcade-card-btn" style={{ fontSize: "1.06rem", background: "linear-gradient(98deg, #FFD600 0%, #FF506D 100%)", color: "#3200ae", boxShadow: "0 2px 20px #ffd60080" }}>
-          🎮 Play Now
-        </a>
-        <a href="#fun-api" className="arcade-card-btn" style={{ background: "linear-gradient(98deg,#43E9FF,#ffd600 99%)", color: "#0b0157" }}>
-          😄 Random Fun
-        </a>
-      </div>
-    </header>
-  );
-});
-
-// Individual feature card (memo)
-const FeatureCard = React.memo(function FeatureCard({ icon, title, desc, route }) {
-  return (
-    <div className="arcade-feature-card" tabIndex={0} aria-label={`Play ${title}`}>
-      <div className="arcade-feature-icon">{icon}</div>
-      <div className="arcade-feature-title">{title}</div>
-      <div className="arcade-feature-desc">{desc}</div>
-      <a href={route} className="arcade-card-btn" tabIndex={0} aria-label={`Play ${title} now!`}>
-        Play&nbsp;▶
-      </a>
-    </div>
-  );
-});
-
-// Feature Grid (memoized)
-const FeatureGrid = React.memo(function FeatureGrid() {
-  // Memoize to avoid rerender
+const GamesCardsGrid = React.memo(function GamesCardsGrid({ onPlayGame }) {
+  // Memoize grid content for performance
   const cards = useMemo(
     () =>
-      featureGames.map((g) => (
-        <FeatureCard key={g.title} icon={g.icon} title={g.title} desc={g.desc} route={g.route} />
+      ARCADE_GAMES.map((g) => (
+        <div className="game-card arcade-font" key={g.title} tabIndex={0}>
+          <div className="game-icon" aria-hidden="true">
+            {g.icon}
+          </div>
+          <div className="game-title">{g.title}</div>
+          <div className="game-desc">{g.desc}</div>
+          <button
+            className="game-play-btn"
+            onClick={() => onPlayGame(g.route)}
+            tabIndex={0}
+            aria-label={`Play ${g.title}`}
+          >
+            PLAY ▶
+          </button>
+        </div>
       )),
-    []
+    [onPlayGame]
   );
   return (
-    <section id="feature-grid">
-      <div className="arcade-feature-grid">
+    <section className="games-preview-section">
+      <div
+        style={{
+          fontFamily: "'Bangers','Orbitron',sans-serif",
+          fontSize: "1.3rem",
+          color: "#ffd600",
+          letterSpacing: ".08em",
+        }}
+      >
+        Choose a Minigame
+      </div>
+      <div className="arcade-games-grid" style={{ marginTop: 16 }}>
         {cards}
       </div>
     </section>
   );
 });
 
-// Arcade Footer (memoized with memoized socials/links)
+/**
+ * PUBLIC_INTERFACE
+ * Fun API Section - rotating between Joke, Quote, or Number Fact
+ */
+const apiTypes = [
+  {
+    name: "Joke",
+    fetch: async () => {
+      // JokeAPI
+      const r = await fetch("https://v2.jokeapi.dev/joke/Any?type=single");
+      const data = await r.json();
+      if (data && data.joke) return { type: "Joke", text: data.joke };
+      throw new Error("No Joke");
+    },
+  },
+  {
+    name: "Quote",
+    fetch: async () => {
+      // Quotable API
+      const r = await fetch("https://api.quotable.io/random?maxLength=80");
+      const data = await r.json();
+      if (data && data.content) return { type: "Quote", text: `"${data.content}" — ${data.author}` };
+      throw new Error("No Quote");
+    },
+  },
+  {
+    name: "Fact",
+    fetch: async () => {
+      // NumbersAPI
+      const n = Math.floor(Math.random() * 300);
+      const r = await fetch(`http://numbersapi.com/${n}/trivia`);
+      const txt = await r.text();
+      if (txt) return { type: "Fact", text: txt };
+      throw new Error("No Fact");
+    },
+  },
+];
+
+const fallbackPool = [
+  { type: "Joke", text: "Why did the pixel cross the screen? To get to 'the other byte'!" },
+  { type: "Fact", text: "The very first video game was created in 1958!" },
+  { type: "Quote", text: '"The best way to get started is to quit talking and begin playing." — Walt Disney' },
+  { type: "Fact", text: "A highscore is worth bragging about — aim for #1 today!" },
+  { type: "Joke", text: "Why don't programmers play hide and seek? Because good luck hiding from the compiler." },
+  { type: "Fact", text: "There are more possible Tetris games than atoms in the universe." },
+];
+
+/**
+ * PUBLIC_INTERFACE
+ * LiveFunElement: retrieves and displays random fun content. User can rotate.
+ * API usage is controlled and component is memoized for responsiveness.
+ */
+const LiveFunElement = React.memo(function LiveFunElement() {
+  const [item, setItem] = useState({ type: "Fun", text: "Loading a fun fact..." });
+  const [loading, setLoading] = useState(false);
+
+  const getRandomAPI = useCallback(() => {
+    // Randomly pick which API to fetch from
+    return apiTypes[Math.floor(Math.random() * apiTypes.length)];
+  }, []);
+
+  const fetchContent = useCallback(async () => {
+    setLoading(true);
+    let api = getRandomAPI();
+    try {
+      const res = await api.fetch();
+      setItem(res);
+    } catch {
+      // fallback random fun item
+      setItem(fallbackPool[Math.floor(Math.random() * fallbackPool.length)]);
+    }
+    setLoading(false);
+  }, [getRandomAPI]);
+
+  useEffect(() => { fetchContent(); }, [fetchContent]);
+
+  // Playful type-based emoji
+  const emoji =
+    item.type === "Joke" ? "😆"
+      : item.type === "Quote" ? "💬"
+        : item.type === "Fact" ? "🔢"
+          : "🎲";
+
+  return (
+    <section className="live-fun-api-wrap arcade-font" aria-live="polite">
+      <div className="fun-fact-bubble" tabIndex={0}>
+        <span aria-label={item.type}>{emoji}</span> &nbsp;{item.text}
+        <br />
+        <button className="fun-api-btn" onClick={fetchContent} disabled={loading}>
+          {loading ? "Loading..." : "🔀 New Fun!"}
+        </button>
+      </div>
+    </section>
+  );
+});
+
+/**
+ * PUBLIC_INTERFACE
+ * Vibrant Arcade Footer with styling
+ */
 const ArcadeFooter = React.memo(function ArcadeFooter() {
   const socials = useMemo(
     () =>
       SOCIALS.map((s) => (
-        <a key={s.title} href={s.url} title={s.title} target="_blank" rel="noopener noreferrer">{s.icon}</a>
+        <a key={s.title} href={s.url} title={s.title} target="_blank" rel="noopener noreferrer">
+          {s.icon}
+        </a>
       )),
     []
   );
+  // Example links
   const links = useMemo(
     () => [
       <a href="#" key="terms">Terms</a>,
       <span key="dot1">•</span>,
       <a href="#" key="privacy">Privacy</a>,
       <span key="dot2">•</span>,
-      <a href="#" key="contact">Contact</a>
+      <a href="#" key="contact">Contact</a>,
     ],
     []
   );
   return (
-    <footer className="arcade-footer-main arcade-footer">
+    <footer className="arcade-footer-vibrant arcade-font">
       <div>
-        <span style={{ fontWeight: 900, fontSize: "1.24rem", letterSpacing: "1.6px", color: "#FFD600", filter: "drop-shadow(0 2px #e900d6da)" }}>
+        <span className="footer-gradient-txt" style={{ fontWeight: 900, fontSize: "1.24rem", letterSpacing: "1.3px" }}>
           Made with <span role="img" aria-label="love" style={{ color: "#ff59b9", fontWeight: 700 }}>❤️</span>
-        </span> by MiniMayhem Team
+        </span>{" "}
+        by MiniMayhem Team
       </div>
-      <div className="arcade-footer-social">{socials}</div>
-      <div className="arcade-footer-links">{links}</div>
+      <div className="footer-socials">{socials}</div>
+      <div className="footer-links">{links}</div>
     </footer>
   );
 });
 
-// The main page (memoize top-level for static props)
-const LandingPage = React.memo(() => {
-  // FunAPI section visibility
-  const [funVisible, funApiRef] = useVisibility(0.09); // trigger slightly before in view
+/**
+ * PUBLIC_INTERFACE
+ * Top-level Landing Page: composed of all
+ */
+const LandingPage = React.memo(function LandingPage() {
+  const navigate = useNavigate();
+
+  // surprise selection handler
+  const handleSurprise = useCallback(() => {
+    // Pick a random game route and navigate/focus
+    const all = ARCADE_GAMES;
+    const random = all[Math.floor(Math.random() * all.length)];
+    if (random && random.route) {
+      navigate(random.route, { replace: false });
+    }
+  }, [navigate]);
+
+  // game play button clicked
+  const handlePlayGame = useCallback(
+    (route) => {
+      if (route) navigate(route, { replace: false });
+    },
+    [navigate]
+  );
+
+  // Lazy-load Fun API
+  const LazyLiveFunElement = useMemo(
+    () => lazy(() => Promise.resolve({ default: LiveFunElement })),
+    []
+  );
 
   return (
     <>
-      <style>{arcadeFonts + arcadeCss}</style>
-      <NavbarWithSettings />
-      <div style={{
-        position: "relative",
-        minHeight: "100vh",
-        background: "linear-gradient(120deg, #1a0034 0%, #5118ea 30%, #ffd600 98%)",
-        overflow: "hidden", zIndex: 0
-      }}>
-        <HeroSection />
-        <div className="container" style={{ paddingTop: 36, zIndex: 2, position: "relative" }}>
-          <FeatureGrid />
-          <div id="fun-api" ref={funApiRef} style={{ minHeight: 120 }}>
-            {/* Use Suspense fallback and lazy load FunAPI */}
-            {funVisible ? (
-              <Suspense fallback={<FunAPILoader />}>
-                <LazyFunAPI />
-              </Suspense>
-            ) : (
-              <FunAPILoader />
-            )}
-          </div>
+      <style>{ARCADE_FONTS + ARCADE_CSS}</style>
+      <Navbar />
+      <div className="arcade-navbar-pad" />
+      <main className="arcade-landing-bg" style={{ minHeight: "100vh", width: "100vw" }}>
+        <WelcomeSection onSurprise={handleSurprise} />
+        <div className="container" style={{ maxWidth: 1050, margin: "0 auto", padding: "0 12px", zIndex: 2, position: "relative" }}>
+          <GamesCardsGrid onPlayGame={handlePlayGame} />
         </div>
+        <Suspense fallback={
+          <section className="live-fun-api-wrap arcade-font">
+            <div className="fun-fact-bubble" style={{ opacity: 0.65 }}>Loading fun...</div>
+          </section>
+        }>
+          <LazyLiveFunElement />
+        </Suspense>
         <ArcadeFooter />
-      </div>
+      </main>
     </>
   );
 });

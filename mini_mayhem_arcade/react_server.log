@@ -7,12 +7,12 @@
 <i> [webpack-dev-server] On Your Network (IPv4): http://172.17.0.2:3000/
 <i> [webpack-dev-server] Content not from webpack is served from './public' directory
 Injecting EditorRootWrapper import: ../.ve/EditorRootWrapper
-asset bundle.js 1.76 MiB [emitted] (name: main)
+asset bundle.js 1.77 MiB [emitted] (name: main)
 asset index.html 1.98 KiB [emitted]
 runtime modules 28.7 KiB 15 modules
 modules by path ./node_modules/ 1.54 MiB 34 modules
-modules by path ./src/ 39.8 KiB
-  modules by path ./src/*.js 32.3 KiB 4 modules
+modules by path ./src/ 43.3 KiB
+  modules by path ./src/*.js 35.8 KiB 4 modules
   modules by path ./src/*.css 7.49 KiB
     ./src/index.css 2.23 KiB [built] [code generated]
     + 3 modules
@@ -22,14 +22,14 @@ modules by path ./.ve/ 15.1 KiB
     ./.ve/EditorOverlay.css 2.25 KiB [built] [code generated]
     ./node_modules/css-loader/dist/cjs.js!./.ve/EditorOverlay.css 697 bytes [built] [code generated]
   ./.ve/EditorOverlay.jsx 1.58 KiB [built] [code generated]
-webpack 5.99.9 compiled successfully in 1436 ms
+webpack 5.99.9 compiled successfully in 1369 ms
 assets by status 1.98 KiB [cached] 1 asset
-assets by path *.js 1.8 MiB
-  asset bundle.js 1.77 MiB [emitted] (name: main)
-  asset main.7e57dd470a38f0bed198.hot-update.js 34.5 KiB [emitted] [immutable] [hmr] (name: main)
-asset main.7e57dd470a38f0bed198.hot-update.json 28 bytes [emitted] [immutable] [hmr]
-Entrypoint main 1.8 MiB = bundle.js 1.77 MiB main.7e57dd470a38f0bed198.hot-update.js 34.5 KiB
+assets by path *.js 1.79 MiB
+  asset bundle.js 1.76 MiB [emitted] (name: main)
+  asset main.274186310104f77eb62c.hot-update.js 28.9 KiB [emitted] [immutable] [hmr] (name: main)
+asset main.274186310104f77eb62c.hot-update.json 28 bytes [emitted] [immutable] [hmr]
+Entrypoint main 1.79 MiB = bundle.js 1.76 MiB main.274186310104f77eb62c.hot-update.js 28.9 KiB
 cached modules 1.57 MiB [cached] 46 modules
 runtime modules 28.7 KiB 15 modules
-./src/LandingPage.js 27 KiB [built] [code generated]
-webpack 5.99.9 compiled successfully in 199 ms
+./src/LandingPage.js 22.3 KiB [built] [code generated]
+webpack 5.99.9 compiled successfully in 167 ms
