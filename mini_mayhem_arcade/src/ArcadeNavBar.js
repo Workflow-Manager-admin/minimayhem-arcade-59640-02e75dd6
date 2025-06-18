@@ -1,48 +1,48 @@
 import React from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import "./ArcadeNavBar.css";
 
 // PUBLIC_INTERFACE
 /**
- * The arcade-styled navigation bar for MiniMayhem Arcade.
- * Applies a retro design with gradient background, Google Fonts import,
- * neon-glow and scaling effects, proper spacing, and a fun emoji in the title.
+ * ArcadeNavBar is a visually striking, always-visible navigation bar inspired by retro arcade aesthetics.
+ * Features include: vibrant gradient background, retro pixelated font, neon glowing active link, 
+ * glowing and scaling hover/click feedback, emoji branding, and consistent arcade-style spacing.
  */
-const ArcadeNavBar = () => {
-  const location = useLocation();
+function ArcadeNavBar() {
   return (
     <nav className="arcade-navbar">
-      <div className="arcade-navbar-brand">
-        <span role="img" aria-label="game controller" className="arcade-navbar-emoji">
+      <div className="arcade-navbar-title">
+        <span role="img" aria-label="arcade controller" className="emoji-glow">
           🎮
         </span>
-        <span className="arcade-navbar-title">MiniMayhem Arcade</span>
+        <span className="arcade-title-text">MiniMayhem Arcade</span>
       </div>
-      <ul className="arcade-navbar-links">
-        <li>
-          <NavLink to="/" end
-            className={({ isActive }) => isActive ? "arcade-link active" : "arcade-link"}
-          >Home</NavLink>
-        </li>
-        <li>
-          <NavLink to="/games"
-            className={({ isActive }) =>
-              location.pathname.startsWith("/games") && location.pathname.length <= 7
-                ? "arcade-link active"
-                : "arcade-link"
-            }
-          >
-            All Games
-          </NavLink>
-        </li>
-        <li>
-          <NavLink to="/top-games"
-            className={({ isActive }) => isActive ? "arcade-link active" : "arcade-link"}
-          >Top Games</NavLink>
-        </li>
-      </ul>
+      <div className="arcade-navbar-links">
+        <NavLink
+          exact="true"
+          to="/"
+          className="arcade-link"
+          activeclassname="arcade-link-active"
+        >
+          Home
+        </NavLink>
+        <NavLink
+          to="/games"
+          className="arcade-link"
+          activeclassname="arcade-link-active"
+        >
+          Games
+        </NavLink>
+        <NavLink
+          to="/top-games"
+          className="arcade-link"
+          activeclassname="arcade-link-active"
+        >
+          Trending
+        </NavLink>
+      </div>
     </nav>
   );
-};
+}
 
 export default ArcadeNavBar;

@@ -12,9 +12,9 @@ asset index.html 1.98 KiB [emitted]
 runtime modules 28.7 KiB 15 modules
 cacheable modules 1.75 MiB
   modules by path ./node_modules/ 1.54 MiB 34 modules
-  modules by path ./src/ 204 KiB
-    modules by path ./src/*.js 190 KiB 13 modules
-    modules by path ./src/*.css 13.8 KiB
+  modules by path ./src/ 205 KiB
+    modules by path ./src/*.js 191 KiB 13 modules
+    modules by path ./src/*.css 14.2 KiB
       ./src/index.css 2.23 KiB [built] [code generated]
       + 5 modules
   modules by path ./.ve/ 15.1 KiB
@@ -23,24 +23,24 @@ cacheable modules 1.75 MiB
       ./.ve/EditorOverlay.css 2.25 KiB [built] [code generated]
       ./node_modules/css-loader/dist/cjs.js!./.ve/EditorOverlay.css 697 bytes [built] [code generated]
     ./.ve/EditorOverlay.jsx 1.58 KiB [built] [code generated]
-webpack 5.99.9 compiled successfully in 1907 ms
+webpack 5.99.9 compiled successfully in 1930 ms
 assets by status 1.98 KiB [cached] 1 asset
-assets by path *.js 1.98 MiB
+assets by path *.js 1.97 MiB
   asset bundle.js 1.97 MiB [emitted] (name: main)
-  asset main.8d6c2f83bf28bfa83eb9.hot-update.js 5.68 KiB [emitted] [immutable] [hmr] (name: main)
-asset main.8d6c2f83bf28bfa83eb9.hot-update.json 28 bytes [emitted] [immutable] [hmr]
-Entrypoint main 1.98 MiB = bundle.js 1.97 MiB main.8d6c2f83bf28bfa83eb9.hot-update.js 5.68 KiB
+  asset main.99d3edd6e4cfe5b52614.hot-update.js 4.65 KiB [emitted] [immutable] [hmr] (name: main)
+asset main.99d3edd6e4cfe5b52614.hot-update.json 28 bytes [emitted] [immutable] [hmr]
+Entrypoint main 1.97 MiB = bundle.js 1.97 MiB main.99d3edd6e4cfe5b52614.hot-update.js 4.65 KiB
 cached modules 1.75 MiB [cached] 57 modules
 runtime modules 28.7 KiB 15 modules
-./src/ArcadeNavBar.js 2.67 KiB [built] [code generated]
-webpack 5.99.9 compiled successfully in 57 ms
+./src/ArcadeNavBar.js 2.02 KiB [built] [code generated]
+webpack 5.99.9 compiled successfully in 67 ms
 assets by status 1.98 KiB [cached] 1 asset
 assets by path *.js 1.98 MiB
   asset bundle.js 1.97 MiB [emitted] (name: main)
-  asset main.d22fa89dcdfc11a0983c.hot-update.js 7.06 KiB [emitted] [immutable] [hmr] (name: main)
-asset main.d22fa89dcdfc11a0983c.hot-update.json 28 bytes [emitted] [immutable] [hmr]
-Entrypoint main 1.98 MiB = bundle.js 1.97 MiB main.d22fa89dcdfc11a0983c.hot-update.js 7.06 KiB
+  asset main.43e740d1751d4fd463cc.hot-update.js 7.06 KiB [emitted] [immutable] [hmr] (name: main)
+asset main.43e740d1751d4fd463cc.hot-update.json 28 bytes [emitted] [immutable] [hmr]
+Entrypoint main 1.98 MiB = bundle.js 1.97 MiB main.43e740d1751d4fd463cc.hot-update.js 7.06 KiB
 cached modules 1.75 MiB [cached] 57 modules
 runtime modules 28.7 KiB 15 modules
 ./node_modules/css-loader/dist/cjs.js!./src/ArcadeNavBar.css 4.49 KiB [built] [code generated]
-webpack 5.99.9 compiled successfully in 72 ms
+webpack 5.99.9 compiled successfully in 67 ms
