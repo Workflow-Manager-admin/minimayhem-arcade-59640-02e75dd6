@@ -343,6 +343,15 @@ const MemoryMatchGame = () => {
           const isFlipped = flipped.includes(idx) || matched.includes(idx);
           const isMatched = matched.includes(idx);
           const isSolo = card.id === "solo";
+          // Style for card scaling by mode
+          const emojiFont =
+            boardSize < 5
+              ? "2.15rem"
+              : boardSize > 10
+              ? "1.02rem"
+              : boardSize > 7
+              ? "1.25rem"
+              : "1.7rem";
           return (
             <button
               key={idx}
@@ -363,22 +372,81 @@ const MemoryMatchGame = () => {
                   : "Face down card"
               }
               style={{
-                fontSize:
-                  boardSize < 5
-                    ? "2.15rem"
-                    : boardSize > 10
-                    ? "1.02rem"
-                    : boardSize > 7
-                    ? "1.25rem"
-                    : "1.7rem",
+                fontSize: emojiFont,
                 width: `min(66px,8vw)`,
                 aspectRatio: "1/1",
                 pointerEvents: isMatched ? "none" : "auto",
-                animationDelay: gameOver ? "0s" : `${((idx % boardSize) + Math.floor(idx / boardSize)) * 0.0118}s`
+                animationDelay: gameOver ? "0s" : `${((idx % boardSize) + Math.floor(idx / boardSize)) * 0.0118}s`,
+                padding: 0,
+                outline: 'none',
+                position: 'relative',
+                background: 'none',
               }}
               disabled={disabled || isMatched}
             >
-              {isMatched || isFlipped ? card.emoji : "🀫"}
+              {/* Card flip faces */}
+              <span
+                style={{
+                  display: "block",
+                  width: "100%",
+                  height: "100%",
+                  position: "relative",
+                  zIndex: 2,
+                }}
+              >
+                {isMatched || isFlipped ? (
+                  <span
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      width: "100%",
+                      height: "100%",
+                      fontSize: emojiFont,
+                      lineHeight: 1,
+                      textShadow: "0 2px 10px #FFD60090, 0 0 18px #43E9FF88",
+                      transition: "0.1s",
+                    }}
+                    aria-hidden={!isFlipped}
+                  >
+                    {card.emoji}
+                  </span>
+                ) : (
+                  // Card back (arcade style – use a card-back tile emoji or Unicode)
+                  <span
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      width: "100%",
+                      height: "100%",
+                      fontSize: emojiFont,
+                      background:
+                        "repeating-linear-gradient(120deg,#2d187480 10%, #ffd60018 40%, #4ef8e650 70%)",
+                      borderRadius: "9px",
+                      boxShadow:
+                        "0 2px 12px #2bf4ff33, 0 0.5px 11px #ffd6005c",
+                      color: "#FFD600ee",
+                      textShadow: "0 2px 12px #2323e6a4",
+                      transition: "background 0.13s, color 0.1s",
+                      border: "2.1px dashed #FFD60076",
+                    }}
+                    aria-hidden={isFlipped}
+                  >
+                    {/* Arcade style tile/card-back: Mahjong U+1F02B 🀫, or fallback */}
+                    <span
+                      style={{
+                        filter: "drop-shadow(0px 3px 11px #ffd60096)",
+                        fontSize: "1.13em"
+                      }}
+                      role="img"
+                      aria-label="Card back"
+                    >
+                      🀫
+                    </span>
+                  </span>
+                )}
+              </span>
             </button>
           );
         })}
