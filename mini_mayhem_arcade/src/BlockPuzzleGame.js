@@ -274,24 +274,55 @@ const BlockPuzzleGame = () => {
   const handleDragStart = (e, shape, index) => {
     setActiveShapeIdx(index);
     setPlacingShape(shape);
-    e.dataTransfer.effectAllowed = "move";
-    e.dataTransfer.setData("text/shape", JSON.stringify(shape));
+    if (e.dataTransfer) {
+      e.dataTransfer.effectAllowed = "move";
+      e.dataTransfer.setData("text/shape", JSON.stringify(shape));
+    }
+  };
+
+  // Helper: Find closest valid (row, col) cell under the current cursor
+  const findClosestSnapCell = (clientX, clientY) => {
+    if (!boardRef.current) return null;
+    const rect = boardRef.current.getBoundingClientRect();
+    for (let r = 0; r < BOARD_SIZE; ++r) {
+      for (let c = 0; c < BOARD_SIZE; ++c) {
+        const cellLeft = rect.left + c * CELL_SIZE_PX;
+        const cellTop = rect.top + r * CELL_SIZE_PX;
+        const cellRight = cellLeft + CELL_SIZE_PX;
+        const cellBottom = cellTop + CELL_SIZE_PX;
+        if (
+          clientX >= cellLeft &&
+          clientX <= cellRight &&
+          clientY >= cellTop &&
+          clientY <= cellBottom
+        ) {
+          return { row: r, col: c };
+        }
+      }
+    }
+    return null;
   };
 
   // Drag over: highlight only when exactly on a legal anchor cell
   const handleDragOver = (e, row, col) => {
+    // row, col are cell positions from mapped grid
     if (activeShapeIdx == null || !shapes[activeShapeIdx]) return;
     const key = `${row}-${col}`;
     const canSnap = validPlacements.has(key);
     setHoverRoot({ row, col, canPlace: canSnap });
-    if (canSnap) e.preventDefault(); // Allows valid drop only!
+    // Only allow drop for exact valid targets
+    if (canSnap) e.preventDefault();
+    else if (e.dataTransfer) e.dataTransfer.dropEffect = "none";
   };
   const handleDragLeave = () => setHoverRoot(null);
 
-  // Drop: only if legal, using precise cell snap
+  // Enhanced drop: always snap to top-left of cell; check for valid placement
   const handleDrop = (e, row, col) => {
+    // Ensure block always snaps to the grid root and not in-between
     if (validPlacements.has(`${row}-${col}`)) {
       handleDropShape(e, row, col);
+    } else {
+      setHoverRoot(null);
     }
   };
 
@@ -344,6 +375,7 @@ const BlockPuzzleGame = () => {
 
   // Arcade style for this game only
   const arcadeCss = `
+  /* Core board and drag feedback styling for grid snap and UX clarity */
   .bp-main-bg {
     background: radial-gradient(circle at 10% 35%,#3B00A4 0%, #1BC9FF11 40%, #15002e 95%);
     min-height: 100vh;
@@ -396,7 +428,7 @@ const BlockPuzzleGame = () => {
     border: 1.75px solid #412066;
     border-radius:7px;
     background: rgba(16,14,66,0.32);
-    transition: background .12s,border .13s;
+    transition: background .12s,border .13s, box-shadow .13s;
     position:relative;
     overflow:hidden;
   }
@@ -409,7 +441,19 @@ const BlockPuzzleGame = () => {
   .bp-cell-hover {
     border: 2.2px dashed #43E9FF !important;
     background: rgba(67,233,255,0.25)!important;
-    z-index:3;
+    z-index:5;
+    box-shadow: 0 0 21px 3px #43e9ff66;
+    outline:0;
+    animation: bpcellhover-pop .18s linear;
+  }
+  /* Subtle indicator for all valid snap anchors even if not directly hovered */
+  .bp-cell[style*="border-color: #43E9FFAA"] {
+    box-shadow:0 0 7px #43E9FF22;
+    border-style: dashed;
+  }
+  @keyframes bpcellhover-pop {
+    from { box-shadow: 0 0 6px #43E9FF33; opacity:.5;}
+    to   { box-shadow:0 0 21px 3px #43e9ffab;opacity:1; }
   }
   .bp-cell-cannot {
     filter:blur(1.7px) brightness(0.84);
@@ -432,9 +476,9 @@ const BlockPuzzleGame = () => {
     transition:box-shadow .13s,background .13s,border .13s;
   }
   .bp-piece-disabled {
-    filter:blur(1.25px) grayscale(0.92);
+    filter: blur(1.15px) grayscale(0.92) contrast(0.93);
     background:#25155738;
-    opacity:0.43;
+    opacity:0.4;
     pointer-events:none;
     cursor:not-allowed;
     user-select:none;
@@ -442,6 +486,8 @@ const BlockPuzzleGame = () => {
   .dragging {
     opacity:0.3 !important;
     background:#FFD60033 !important;
+    filter: drop-shadow(0 0 16px #FFD60044);
+    transition: opacity .1s, filter .13s;
   }
   .bp-status-row {
     margin-top:18px;margin-bottom:4px;color:#fff;font-size:1.14rem;font-family:'Orbitron',monospace;
@@ -505,24 +551,33 @@ const BlockPuzzleGame = () => {
             let cellClass = "bp-cell";
             let cellStyle = {};
 
-            // Highlight only if this is a valid anchor root for current drag/tap selection
-            if (
+            // Only highlight/unlock for grid-snap targets when an active shape is dragged/selected and it's a valid root
+            const isSnapTarget = !!(
+              placingShape &&
+              activeShapeIdx !== null &&
+              status === "playing" &&
+              validPlacements.has(`${row}-${col}`) &&
+              hoverRoot &&
+              hoverRoot.row === row &&
+              hoverRoot.col === col &&
+              hoverRoot.canPlace
+            );
+            if (isSnapTarget) {
+              cellClass += " bp-cell-hover";
+              cellStyle.borderColor = "#43E9FF";
+              cellStyle.zIndex = 5;
+              cellStyle.boxShadow =
+                "0 0 16px 4px #43E9FF99,0 1.5px 10px #ffd60044";
+              cellStyle.transition = "box-shadow .12s, border .14s";
+            } else if (
+              // Still allow static valid roots a subtle highlight
               placingShape &&
               activeShapeIdx !== null &&
               status === "playing" &&
               validPlacements.has(`${row}-${col}`)
             ) {
-              // Highlight actual target cell using canPlace map
-              if (
-                (hoverRoot &&
-                  hoverRoot.row === row &&
-                  hoverRoot.col === col &&
-                  hoverRoot.canPlace) ||
-                (hoverRoot == null && activeShapeIdx !== null)
-              ) {
-                cellClass += " bp-cell-hover";
-                cellStyle.borderColor = "#43E9FF";
-              }
+              cellStyle.borderColor = "#43E9FFAA";
+              cellStyle.zIndex = 3;
             }
 
             if (filled) {
@@ -561,17 +616,28 @@ const BlockPuzzleGame = () => {
         </div>
       </div>
       <div className="bp-pieces-area" aria-label="Block shapes to place">
-        {shapes.map((shape, idx) => (
-          <BlockPiece key={shape.key}
-            shape={shape}
-            onDragStart={(e,s,o) => handleDragStart(e,s,idx)}
-            onTouchSelect={(s,o) => handleTouchSelect(s,idx)}
-            dragging={activeShapeIdx===idx}
-            origin={idx}
-            dragId={"bppiece-"+idx}
-            disabled={status !== "playing" || !canPlaceAnywhere(board, shape)}
-          />
-        ))}
+        {shapes.map((shape, idx) => {
+          // "disabled" means can't play that shape at all on current board
+          const cannotPlace = !canPlaceAnywhere(board, shape);
+          // If one block is being dragged, others should be visually disabled
+          const isDragging = activeShapeIdx === idx;
+          return (
+            <BlockPiece
+              key={shape.key}
+              shape={shape}
+              onDragStart={(e, s, o) => handleDragStart(e, s, idx)}
+              onTouchSelect={(s, o) => handleTouchSelect(s, idx)}
+              dragging={isDragging}
+              origin={idx}
+              dragId={"bppiece-" + idx}
+              disabled={
+                status !== "playing" ||
+                cannotPlace ||
+                (!!placingShape && !isDragging)
+              }
+            />
+          );
+        })}
       </div>
       <div className="bp-status-row" aria-live="polite">
         {status==="over" && (
