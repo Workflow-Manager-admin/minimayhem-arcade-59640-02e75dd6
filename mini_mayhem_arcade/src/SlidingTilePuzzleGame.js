@@ -1,538 +1,446 @@
 import React, { useState, useEffect, useRef } from "react";
 
-/**
- * SlidingTilePuzzleGame - an arcade-style sliding puzzle game for MiniMayhem Arcade.
- * Modes: Easy (3x3), Medium (4x4), Hard (5x5).
- * Features: Click-to-slide, timer and moves count, best scores tracked in localStorage, and vibrant arcade visuals.
- * Integrates into SPA routing at '/games/sliding-puzzle'.
- */
-
-// Tile board sizes by mode
-const BOARD_SIZES = {
-  easy: 3,
-  medium: 4,
-  hard: 5,
-};
-
-const MODE_LABELS = {
-  easy: "Easy (3x3)",
-  medium: "Medium (4x4)",
-  hard: "Hard (5x5)",
-};
-
-const BESTS_LS_KEY = "sliding-tile-puzzle-bests";
-
-function genSolvedBoard(size) {
-  // returns [ [1,2,3],[4,5,6],[7,8,0] ] etc (0 = blank)
-  const arr = [];
-  let n = 1;
-  for (let i = 0; i < size; ++i) {
-    arr.push([]);
-    for (let j = 0; j < size; ++j) {
-      arr[i].push(n < size * size ? n++ : 0);
-    }
-  }
-  return arr;
-}
-
-// Fisher-Yates on flat array while keeping puzzle solvable
-function shuffleBoard(board, size) {
-  let flat = board.flat();
-  let shuffled = [...flat];
-  // Try shuffling until solvable and not already solved
-  do {
-    // Fisher-Yates shuffle
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      let j = Math.floor(Math.random() * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-    }
-  } while (!isSolvable(shuffled, size) || isSolvedArray(shuffled));
-  // convert back to 2D
-  let res = [];
-  for (let i = 0; i < size; ++i)
-    res.push(shuffled.slice(i * size, (i + 1) * size));
-  return res;
-}
-
-function isSolvedArray(arr) {
-  // Flat solved?
-  return arr.every((v, i) =>
-    i === arr.length - 1 ? v === 0 : v === i + 1
-  );
-}
-
-function isSolved(board) {
-  return isSolvedArray(board.flat());
-}
-
 // PUBLIC_INTERFACE
-function isSolvable(arr, size) {
-  // Checks solvability for N-puzzle
-  // See: https://www.geeksforgeeks.org/check-instance-15-puzzle-solvable/
+/**
+ * SlidingTilePuzzleGame
+ * Classic sliding tile puzzle with arcade pixel/retro style.
+ * - Modes: Easy (3x3), Medium (4x4), Hard (5x5)
+ * - Allow mode selection, click-to-slide tiles, timer and moves counter,
+ * - Show best stats stored in localStorage
+ * - Vibrant pixel/arcade styling with bright gradients and arcade/pixel fonts
+ */
+const MODES = {
+  easy: { size: 3, label: "Easy (3×3)" },
+  medium: { size: 4, label: "Medium (4×4)" },
+  hard: { size: 5, label: "Hard (5×5)" },
+};
+// Font-face import for arcade/pixel style:
+const fontCss = `
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+`;
+
+function getBestKey(mode) {
+  return `sliding-puzzle-best-${mode}`;
+}
+
+function shuffleArray(arr, size) {
+  // Fisher-Yates shuffle until solvable (avoid unsolvable states)
+  let tiles;
+  do {
+    tiles = arr.slice();
+    for (let i = tiles.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [tiles[i], tiles[j]] = [tiles[j], tiles[i]];
+    }
+  } while (!isSolvable(tiles, size) || isSolved(tiles));
+  return tiles;
+}
+function isSolved(tiles) {
+  for (let i = 0; i < tiles.length - 1; i++) {
+    if (tiles[i] !== i + 1) return false;
+  }
+  return tiles[tiles.length - 1] === 0;
+}
+function isSolvable(tiles, size) {
+  // https://www.geeksforgeeks.org/check-instance-15-puzzle-solvable/
+  const len = tiles.length;
   let invCount = 0;
-  let N = size;
-  for (let i = 0; i < arr.length - 1; i++) {
-    for (let j = i + 1; j < arr.length; j++) {
-      if (arr[i] && arr[j] && arr[i] > arr[j]) invCount++;
+  for (let i = 0; i < len - 1; i++) {
+    for (let j = i + 1; j < len; j++) {
+      if (tiles[i] && tiles[j] && tiles[i] > tiles[j]) invCount++;
     }
   }
-  if (N % 2 === 1) {
-    // odd grid, true if inversion even
-    return invCount % 2 === 0;
-  } else {
-    // even grid, blank row from bottom odd => invCount even
-    let blankRowFromBottom =
-      N - Math.floor(arr.indexOf(0) / N); // 1-based
-    if (blankRowFromBottom % 2 === 1)
-      return invCount % 2 === 0;
-    return invCount % 2 === 1;
-  }
+  if (size % 2 === 1) return invCount % 2 === 0; // Odd grid
+  // Even grid: blank row from bottom (start at 0): row 0,1,2,3,...
+  const blankRow = size - Math.floor(tiles.indexOf(0) / size);
+  if (blankRow % 2 === 0) return invCount % 2 === 1;
+  else return invCount % 2 === 0;
 }
+
+function useInterval(callback, delay) {
+  // Runs callback every delay ms, or stops if delay === null. Used for timer.
+  const savedCb = useRef();
+  useEffect(() => { savedCb.current = callback }, [callback]);
+  useEffect(() => {
+    if (delay === null) return;
+    const id = setInterval(() => savedCb.current(), delay);
+    return () => clearInterval(id);
+  }, [delay]);
+}
+
+// Returns humanized time in mm:ss
+function formatTime(secs) {
+  const m = Math.floor(secs / 60), s = secs % 60;
+  return `${m}:${s < 10 ? "0" : ""}${s}`;
+}
+
+function getBest(mode) {
+  try {
+    const str = localStorage.getItem(getBestKey(mode));
+    if (str) {
+      return JSON.parse(str);
+    }
+  } catch { /* ignore */ }
+  return null;
+}
+
+function setBest(mode, moves, time) {
+  localStorage.setItem(getBestKey(mode), JSON.stringify({ moves, time }));
+}
+
+const VIBRANT_BG_GRAD = "linear-gradient(135deg, #00ffff 0%, #ffb347 92%, #ff69b4 100%)";
+const TILE_COLORS = [
+  "#fff", "#ffe76c", "#60eeff", "#4bdfa7", "#f794ff", "#ffa071", "#7ad1ff", "#ffe095", "#e1ff6c", "#ff8f90",
+  "#bf92ff", "#8dff87", "#ffcfdc", "#ffcec7", "#cdf3fe", "#fed3f2", "#ffffb7",
+];
 
 // PUBLIC_INTERFACE
 function SlidingTilePuzzleGame() {
-  // Main state
   const [mode, setMode] = useState("easy");
-  const size = BOARD_SIZES[mode];
-  const [board, setBoard] = useState(() => shuffleBoard(genSolvedBoard(size), size));
-  const [started, setStarted] = useState(false);
+  const size = MODES[mode].size;
+  const total = size * size;
+  const [tiles, setTiles] = useState(() =>
+    shuffleArray([...Array(total - 1).keys()].map(i => i + 1).concat([0]), size)
+  );
   const [moves, setMoves] = useState(0);
-  const [elapsed, setElapsed] = useState(0);
-  const [won, setWon] = useState(false);
-  const [bests, setBests] = useState(() => getBestStats());
-  const timerRef = useRef();
+  const [timer, setTimer] = useState(0);
+  const [started, setStarted] = useState(false);
+  const [victory, setVictory] = useState(false);
+  const [best, setBestStats] = useState(getBest(mode));
+  const firstMoveMade = useRef(false);
 
-  // Reset when mode changes
+  // Timer logic
+  useInterval(() => {
+    if (started && !victory) setTimer(t => t + 1);
+  }, started && !victory ? 1000 : null);
+
+  // When mode changes: reset game state
   useEffect(() => {
-    setBoard(shuffleBoard(genSolvedBoard(size), size));
+    setTiles(shuffleArray([...Array(MODES[mode].size ** 2 - 1).keys()].map(i => i + 1).concat([0]), MODES[mode].size));
     setMoves(0);
-    setElapsed(0);
-    setWon(false);
+    setTimer(0);
+    setVictory(false);
+    setBestStats(getBest(mode));
     setStarted(false);
-    // clear timer
-    if (timerRef.current) clearInterval(timerRef.current);
-  }, [mode, size]);
+    firstMoveMade.current = false;
+  }, [mode]);
 
-  // Timer effect
+  // Check for win
   useEffect(() => {
-    if (started && !won) {
-      timerRef.current = setInterval(() => {
-        setElapsed(e => e + 1);
-      }, 1000);
-      return () => clearInterval(timerRef.current);
-    }
-    return () => {};
-  }, [started, won]);
-
-  // Win effect: check after every board update
-  useEffect(() => {
-    if (isSolved(board)) {
-      if (!won && started) {
-        setWon(true);
-        if (timerRef.current) clearInterval(timerRef.current);
-        // Save bests if beaten
-        let best = bests[mode];
-        let isBest =
+    if (isSolved(tiles)) {
+      if (!victory && started) {
+        setVictory(true);
+        // Update best stats in localStorage if broken
+        if (
           !best ||
-          elapsed < best.time ||
-          (elapsed === best.time && moves < best.moves);
-        if (isBest) {
-          const newBests = {
-            ...bests,
-            [mode]: { time: elapsed, moves, date: Date.now() },
-          };
-          setBests(newBests);
-          setBestStats(newBests);
+          moves < best.moves ||
+          (moves === best.moves && timer < best.time)
+        ) {
+          setBest(mode, moves, timer);
+          setBestStats({ moves, time: timer });
         }
       }
     }
-  }, [board, won, started, elapsed, moves, bests, mode]);
+  }, [tiles, victory, started, moves, timer, best, mode]);
 
-  // Bests localStorage helpers
-  function getBestStats() {
-    try {
-      const val = window.localStorage.getItem(BESTS_LS_KEY);
-      return val ? JSON.parse(val) : {};
-    } catch {
-      return {};
+  function handleTileClick(idx) {
+    if (victory) return;
+    const blankIdx = tiles.indexOf(0);
+    // Adjacent if above/below/left/right and not out of bounds
+    const valid =
+      (idx === blankIdx - 1 && idx % size !== size - 1) ||
+      (idx === blankIdx + 1 && idx % size !== 0) ||
+      idx === blankIdx - size || idx === blankIdx + size;
+    if (!valid) return;
+    // Start timer on first move
+    if (!firstMoveMade.current) {
+      setStarted(true);
+      firstMoveMade.current = true;
     }
-  }
-  function setBestStats(newBests) {
-    window.localStorage.setItem(BESTS_LS_KEY, JSON.stringify(newBests));
-  }
-
-  // PUBLIC_INTERFACE
-  function handleTileClick(i, j) {
-    if (won) return;
-    // Find blank
-    let [bi, bj] = findBlank(board);
-    // Tile adjacent to blank? (orthogonal)
-    const isAdj =
-      (i === bi && Math.abs(j - bj) === 1) ||
-      (j === bj && Math.abs(i - bi) === 1);
-    if (isAdj) {
-      // Slide!
-      let newBoard = board.map(row => row.slice());
-      newBoard[bi][bj] = board[i][j];
-      newBoard[i][j] = 0;
-      setBoard(newBoard);
-      if (!started) setStarted(true);
-      setMoves(m => m + 1);
-    }
-  }
-
-  function findBlank(board) {
-    for (let i = 0; i < board.length; ++i)
-      for (let j = 0; j < board[i].length; ++j)
-        if (board[i][j] === 0) return [i, j];
-    return [-1, -1];
+    // Swap clicked tile with blank
+    const next = tiles.slice();
+    [next[idx], next[blankIdx]] = [next[blankIdx], next[idx]];
+    setTiles(next);
+    setMoves(m => m + 1);
   }
 
   function handleRestart() {
-    setBoard(shuffleBoard(genSolvedBoard(size), size));
-    setStarted(false);
-    setWon(false);
+    setTiles(shuffleArray([...Array(size * size - 1).keys()].map(i => i + 1).concat([0]), size));
     setMoves(0);
-    setElapsed(0);
-    if (timerRef.current) clearInterval(timerRef.current);
+    setTimer(0);
+    setVictory(false);
+    setStarted(false);
+    firstMoveMade.current = false;
   }
 
-  function formatTime(t) {
-    let min = Math.floor(t / 60)
-      .toString()
-      .padStart(2, "0");
-    let sec = (t % 60).toString().padStart(2, "0");
-    return `${min}:${sec}`;
-  }
-
-  // Arcade UI styles
-  const styles = arcadeStyles(size);
+  // Style - arcade pixel/bright
+  const arcadeFont =
+    "'Press Start 2P', 'Orbitron', 'Arial', 'sans-serif'";
+  const borderGlow = "0 0 8px #fff8, 0 3px 14px #55fff9a0";
+  const colorWin = "#53ffb4";
 
   return (
-    <div style={styles.gameOuter}>
-      <div style={styles.titleRow}>
-        <span style={styles.emoji}>🧩</span>
-        <span style={styles.title}>Sliding Tile Puzzle</span>
-      </div>
-      <div style={styles.modeRow}>
-        {Object.keys(BOARD_SIZES).map((m) => (
+    <div
+      style={{
+        fontFamily: arcadeFont,
+        background: VIBRANT_BG_GRAD,
+        borderRadius: 20,
+        boxShadow: "0 6px 34px 0 #22aaff5e, 0 1px 32px #ff7ec5b3",
+        margin: "2.5rem auto",
+        padding: "2.0rem 1.4rem 2.6rem 1.4rem",
+        maxWidth: 520,
+        minWidth: 260,
+        position: "relative",
+        color: "#111",
+        textShadow: "0 2px 7px #fff7, 0 0 3px #def"
+      }}
+    >
+      <style>{fontCss}</style>
+      <h2
+        style={{
+          textAlign: "center",
+          letterSpacing: 2,
+          color: "#2826da",
+          fontFamily: arcadeFont,
+          fontSize: "2rem",
+          marginTop: 0,
+          marginBottom: "0.75rem",
+          textShadow: "0 3px 12px #fff, 0 1.5px 0 #12fcff73,0 2px 8px #fd76fe59"
+        }}
+      >
+        🕹️ Sliding Tile Puzzle
+      </h2>
+      <div
+        style={{
+          textAlign: "center",
+          marginBottom: "1.25rem",
+          display: "flex",
+          flexWrap: "wrap",
+          gap: 13,
+          justifyContent: "center"
+        }}
+      >
+        {Object.entries(MODES).map(([k, v]) => (
           <button
-            key={m}
-            onClick={() => setMode(m)}
+            key={k}
+            className="mode-btn"
+            aria-label={v.label}
             style={{
-              ...styles.modeBtn,
-              ...(mode === m ? styles.modeBtnActive : {}),
+              fontFamily: arcadeFont,
+              fontSize: 15,
+              padding: "8px 9px",
+              background: mode === k ? "#ffd600" : "#4ecdfc",
+              border: "none",
+              color: "#190099",
+              fontWeight: 900,
+              borderRadius: 7,
+              boxShadow: mode === k ? "0 0 9px #fdf670" : "0 2px 10px #90e3ff90",
+              outline: mode === k ? "2.5px solid #fff000" : undefined,
+              cursor: "pointer",
+              marginRight: 0,
+              letterSpacing: 1.2,
+              textShadow: mode === k
+                ? "0 2px 4px #ffc800b0,0 0px 8px #fff"
+                : "0 3px 6px #f4f6ff90",
+              transition: "background 0.2s"
             }}
-            disabled={mode === m}
-            tabIndex={mode === m ? -1 : 0}
+            onClick={() => setMode(k)}
+            disabled={mode === k}
           >
-            {MODE_LABELS[m]}
+            {v.label}
           </button>
         ))}
       </div>
-
-      <div style={styles.statsRow}>
-        <div>
-          <span style={styles.statsLabel}>Moves: </span>
-          {moves}
-        </div>
-        <div>
-          <span style={styles.statsLabel}>Time: </span>
-          {formatTime(elapsed)}
-        </div>
-        <div>
-          <span style={styles.statsLabel}>Best: </span>
-          {bests[mode]
-            ? `${formatTime(bests[mode].time)} / ${bests[mode].moves} moves`
-            : "--"}
-        </div>
-      </div>
-
       <div
-        style={styles.boardWrap}
-        tabIndex={0}
-        aria-label={`Sliding puzzle board, mode ${MODE_LABELS[mode]}`}
+        role="status"
+        aria-live="polite"
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          gap: 38,
+          fontSize: 14.5,
+          fontWeight: 700,
+          margin: "0 0 0.7rem 0",
+          fontFamily: arcadeFont,
+          textShadow: "0 2px 3px #aefff7bb"
+        }}
       >
-        <table style={styles.boardTable}>
-          <tbody>
-            {board.map((row, i) => (
-              <tr key={i}>
-                {row.map((cell, j) => (
-                  <td
-                    key={j}
-                    style={{
-                      ...styles.tile,
-                      ...(!cell ? styles.blankTile : {}),
-                      // Animate solved
-                      ...(won ? styles.wonTile : {}),
-                    }}
-                    tabIndex={cell ? 0 : -1}
-                    aria-label={cell ? `Tile ${cell}` : "Blank"}
-                    onClick={() => cell && handleTileClick(i, j)}
-                  >
-                    {cell ? cell : ""}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <span>
+          <span style={{ color: "#0793b7" }}>Moves: </span>
+          <span style={{ minWidth: 28, display: "inline-block" }}>{moves}</span>
+        </span>
+        <span>
+          <span style={{ color: "#ff6c6c" }}>Time: </span>
+          <span style={{ minWidth: 35, display: "inline-block" }}>{formatTime(timer)}</span>
+        </span>
       </div>
-      <div style={styles.buttonWrap}>
-        <button style={styles.actionBtn} onClick={handleRestart}>
-          {won ? "Play Again" : "Restart"}
-        </button>
+      <div
+        id="arcade-grid"
+        style={{
+          display: "grid",
+          gridTemplateColumns: `repeat(${size}, 58px)`,
+          gridTemplateRows: `repeat(${size}, 58px)`,
+          gap: 8,
+          justifyContent: "center",
+          alignItems: "center",
+          margin: "0 auto 1.6rem auto",
+          background: "#161929c1",
+          borderRadius: 15,
+          boxShadow: "0 0 13px 0 #5be4ff77",
+          border: "2.5px solid #00ffff",
+          padding: "8px",
+          userSelect: "none"
+        }}
+      >
+        {tiles.map((num, i) => {
+          const isBlank = (num === 0);
+          const blankIdx = tiles.indexOf(0);
+          // Highlight if adjacent (legal move)
+          const adj =
+            !victory &&
+            ((i === blankIdx - 1 && i % size !== size - 1) ||
+              (i === blankIdx + 1 && i % size !== 0) ||
+              i === blankIdx - size || i === blankIdx + size);
+
+          return (
+            <button
+              key={i}
+              className="tile"
+              tabIndex={isBlank ? -1 : 0}
+              aria-label={isBlank ? "Blank" : `Tile ${num}`}
+              onClick={() => handleTileClick(i)}
+              disabled={isBlank || victory}
+              style={{
+                width: 56,
+                height: 56,
+                borderRadius: "8px",
+                fontFamily: arcadeFont,
+                fontSize: num > 999 ? 18 : 22,
+                fontWeight: 900,
+                background: isBlank
+                  ? "rgba(250,250,250,0.08)"
+                  : `linear-gradient(110deg, ${TILE_COLORS[i % TILE_COLORS.length]},#fff8)`,
+                boxShadow: isBlank
+                  ? "inset 0 0 9px #00d0ff55"
+                  : adj
+                  ? "0 0 16px 0 #ffefb6, 0 0 20px #98e6ffbb"
+                  : "0 2.5px 18px #fff5, 0 0 3px #fdba46cc",
+                color: isBlank
+                  ? "#40fff8"
+                  : "#23247d",
+                border: isBlank
+                  ? "2px dotted #17eeff90"
+                  : adj
+                  ? "2.8px solid #fff093"
+                  : "2.2px solid #2d97ff66",
+                opacity: isBlank ? 0.24 : 1,
+                cursor: isBlank || victory ? "default" : adj ? "pointer" : "not-allowed",
+                outline: "none",
+                transition:
+                  "background 0.20s, box-shadow 0.19s, border 0.18s, filter 0.2s",
+                filter: adj ? "brightness(1.11)" : undefined,
+                zIndex: isBlank ? 1 : 10,
+                position: "relative"
+              }}
+            >
+              {!isBlank && num}
+            </button>
+          );
+        })}
       </div>
-      {won && (
-        <div style={styles.winBanner} role="status">
-          <span style={styles.emoji}>🎉</span>
-          <div>
-            <strong>You solved it!</strong>
-          </div>
-          <div>
-            Time: {formatTime(elapsed)} | Moves: {moves}
-          </div>
-          {bests[mode] &&
-            elapsed === bests[mode].time &&
-            moves === bests[mode].moves && (
-              <div style={styles.newBest}>✨ New Best! ✨</div>
-            )}
+      {/* WIN Banner */}
+      {victory && (
+        <div
+          aria-live="assertive"
+          style={{
+            position: "absolute",
+            left: 0, right: 0,
+            top: 0,
+            zIndex: 25,
+            padding: "1.33rem 0 0 0",
+            minHeight: 52,
+            textAlign: "center",
+            fontSize: "1.5rem",
+            color: colorWin,
+            fontWeight: 900,
+            fontFamily: arcadeFont,
+            background: "linear-gradient(90deg, #53e7ff11 0%, #d6aedf45 100%)",
+            textShadow:
+              "0 0 9px #ffffffcc, 0 2.5px 16px #c5ffd7, 0 1.5px 0 #140bbc99"
+          }}
+        >
+          <span role="img" aria-label="party">🎉</span>
+          <b> YOU SOLVED IT!</b>
         </div>
       )}
-      <div style={styles.instructions}>
-        <strong>How to Play:</strong> Click a tile adjacent to the blank space to slide it. Solve the puzzle in as few moves and time as you can!
+      {/* Best stats panel */}
+      <div
+        style={{
+          margin: "11px auto 0 auto",
+          padding: "9px 6px 7px 10px",
+          background: "#241b498f",
+          borderRadius: 12,
+          fontSize: "14px",
+          color: "#ffe662",
+          fontFamily: arcadeFont,
+          maxWidth: 320,
+          boxShadow: "0 1.5px 11px #ffd60044",
+          border: "1.5px solid #ffd60044",
+        }}
+      >
+        <span style={{ fontWeight: 700 }}>Best (for {MODES[mode].label}): </span>
+        {best ? (
+          <>
+            <span role="img" aria-label="trophy">🏆</span>
+            &nbsp;<b>Moves:</b> {best.moves}, <b>Time:</b> {formatTime(best.time)}
+          </>
+        ) : (
+          <span style={{ color: "#ffdaba" }}>No record yet</span>
+        )}
+      </div>
+      {/* Controls */}
+      <div style={{
+        marginTop: "1.30rem",
+        display: "flex",
+        justifyContent: "center",
+        gap: 19
+      }}>
+        <button
+          onClick={handleRestart}
+          style={{
+            fontFamily: arcadeFont,
+            fontSize: 15,
+            color: "#fff",
+            fontWeight: 900,
+            background: "linear-gradient(92deg,#00ffe8 0%,#2c72ff 100%)",
+            border: "none",
+            borderRadius: 7,
+            boxShadow: "0 5px 15px 0 #c1f8fff0",
+            outline: "2.5px solid #fff",
+            cursor: "pointer",
+            letterSpacing: 1,
+            padding: "7px 24px",
+            transition: "background 0.2s"
+          }}
+        >
+          Restart
+        </button>
+      </div>
+      {/* Touch tip */}
+      <div style={{
+        margin: "1.1em auto 0.3em auto",
+        textAlign: "center",
+        color: "#44fdff",
+        fontSize: 13,
+        fontFamily: arcadeFont,
+        textShadow: "0 1px 4px #fff9",
+        opacity: 0.98
+      }}>
+        Tap/click tiles <b>next to the blank</b> to slide!
       </div>
     </div>
   );
 }
 
-// Arcade styling functions
-function arcadeStyles(size) {
-  let baseGap = 7;
-  let tileSize = size === 3 ? 76 : size === 4 ? 62 : 50;
-  let fontSize = size === 3 ? 30 : size === 4 ? 22 : 17;
-  return {
-    gameOuter: {
-      margin: "60px auto 0 auto",
-      background:
-        "linear-gradient(100deg,#7ef3ff 0,#529bff 70%,#eecbff 100%)",
-      maxWidth: 426,
-      minWidth: 265,
-      borderRadius: 18,
-      boxShadow:
-        "0 0 24px 0 #19b1ff2f,0 4px 48px 0 #2b196577",
-      padding: "22px 18px 26px 18px",
-      fontFamily:
-        "Orbitron,'Press Start 2P','Arial',sans-serif",
-      position: "relative",
-    },
-    titleRow: {
-      display: "flex",
-      alignItems: "center",
-      fontSize: 33,
-      fontWeight: 800,
-      textShadow:
-        "0 3px 10px #6d8bffa9, 0 1.8px 0 #fff8",
-      gap: 15,
-      justifyContent: "center",
-      color: "#332770",
-      marginBottom: 18,
-    },
-    emoji: {
-      fontSize: 32,
-      marginRight: 4,
-    },
-    modeRow: {
-      display: "flex",
-      gap: 9,
-      marginBottom: 12,
-      justifyContent: "center",
-      fontSize: 15,
-    },
-    modeBtn: {
-      background:
-        "linear-gradient(90deg,#abd4f9,#F5E3E6 80%)",
-      color: "#284877",
-      border: "2.5px solid #4288ed65",
-      borderRadius: 30,
-      fontWeight: 700,
-      boxShadow: "0 2px 7px 0 #57b2ff31",
-      padding: "7.5px 20px",
-      cursor: "pointer",
-      fontFamily: "inherit",
-      outline: "none",
-      transition: "all 0.14s",
-      fontSize: 14.5,
-    },
-    modeBtnActive: {
-      color: "#fff",
-      background:
-        "linear-gradient(90deg,#3ac8fc,#5471ff 90%)",
-      border: "2.5px solid #FFF",
-      boxShadow: "0 1.7px 21px 0 #78c9ff2a",
-      cursor: "default",
-    },
-    statsRow: {
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-      fontSize: 14.3,
-      fontWeight: 600,
-      margin: "0 0 11px 0",
-      letterSpacing: 0.2,
-      color: "#2f2349",
-      background: "#f2edff69",
-      borderRadius: 9,
-      padding: "8px 13px 7px 13px",
-      boxShadow: "0 2px 7px #deb1fd1a",
-      gap: 8,
-      minHeight: 37,
-    },
-    statsLabel: {
-      color: "#004b5785",
-      fontWeight: 800,
-      marginRight: 3,
-    },
-    boardWrap: {
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      justifyContent: "center",
-      outline: "none",
-      margin: "0 auto 0 auto",
-      userSelect: "none",
-      background: "#fff9",
-      borderRadius: 16,
-      padding: `${baseGap + 3}px`,
-      boxShadow:
-        "0 3.5px 12px #aae3ff42,0 1.7px 8px #c3b2ff18",
-      maxWidth: tileSize * size + baseGap * 2.5,
-      minWidth: tileSize * size + baseGap * 2.5,
-      minHeight: tileSize * size + baseGap * 2.5,
-    },
-    boardTable: {
-      borderCollapse: "separate",
-      borderSpacing: baseGap,
-      background: "none",
-      margin: 0,
-      padding: 0,
-      outline: "2.8px solid #5179d139",
-      borderRadius: 10.9,
-      width: "auto",
-      minWidth: tileSize * size,
-      minHeight: tileSize * size,
-    },
-    tile: {
-      width: tileSize,
-      height: tileSize,
-      minWidth: tileSize,
-      minHeight: tileSize,
-      background:
-        "linear-gradient(99deg,#fcf3ff 60%,#bdc0ff 100%)",
-      border: "2.9px solid #8ad0ff7a",
-      borderRadius: 9,
-      boxShadow:
-        "0 1.5px 6px #649bfa31,0 1.5px 16px #c3b2ff13",
-      color: "#23487b",
-      fontWeight: 900,
-      fontSize,
-      cursor: "pointer",
-      textAlign: "center",
-      verticalAlign: "middle",
-      transition: "box-shadow 0.18s, background 0.18s",
-      outline: "none",
-      userSelect: "none",
-      position: "relative",
-    },
-    blankTile: {
-      background: "linear-gradient(99deg,#d9e9ff,#eec6ff 99%)",
-      border: "2.9px solid #e3e1fa90",
-      color: "transparent",
-      cursor: "default",
-      boxShadow: "none",
-    },
-    wonTile: {
-      animation: "puzzleWinPulse 1.18s infinite alternate",
-    },
-    buttonWrap: {
-      textAlign: "center",
-      margin: "12px 0 2px 0",
-    },
-    actionBtn: {
-      background:
-        "linear-gradient(98deg, #FFD600 0%, #FF506D 100%)",
-      color: "#50244b",
-      fontWeight: 900,
-      border: "none",
-      borderRadius: 8,
-      fontSize: 15.7,
-      padding: "9px 29px",
-      margin: "0 6px",
-      cursor: "pointer",
-      boxShadow:
-        "0 3px 16px #ff5b7f47,0 2px 5px #ffd60070",
-      letterSpacing: "1.1px",
-      transition: "box-shadow 0.19s,background 0.18s",
-    },
-    winBanner: {
-      background:
-        "linear-gradient(96deg, #adffef 0%, #e4cfff 100%)",
-      color: "#1c203f",
-      textAlign: "center",
-      borderRadius: 13,
-      margin: "20px auto 8px auto",
-      padding: "21px 8px 12px 8px",
-      fontSize: 20,
-      fontWeight: 800,
-      textShadow:
-        "0 2.5px 7px #fad4ff38, 0 1.3px 0 #ffffff70",
-      boxShadow:
-        "0 7px 44px #9fecff77, 0 2px 10px #fbc4ff40",
-      maxWidth: 315,
-      animation: "puzzleWinBanner 2.1s 1",
-    },
-    newBest: {
-      color: "#d554ff",
-      fontWeight: 900,
-      fontSize: 18.5,
-      paddingTop: 9,
-      textShadow: "0 1.2px 8px #ffc9ff91",
-    },
-    instructions: {
-      fontSize: 14.8,
-      margin: "16px 0 0 0",
-      color: "#4e2d85ac",
-      background: "#f2edff73",
-      borderRadius: 8,
-      padding: "8px 15px",
-      fontFamily: "inherit",
-      boxShadow: "0 3px 12px #aae3ff14",
-      lineHeight: 1.35,
-      textAlign: "center",
-      fontWeight: 500,
-    },
-  };
-}
-
-// PUBLIC_INTERFACE
 export default SlidingTilePuzzleGame;
-
-/* Arcade win animation keyframes (inject)
-   Would normally go in CSS, but included here for self-containment. */
-const winKeyframes = `
-@keyframes puzzleWinPulse {
-  from { box-shadow: 0 0 0 #fff; }
-  to   { box-shadow: 0 0 44px 12px #ffbcf488; }
-}
-@keyframes puzzleWinBanner {
-  0% { transform: scale(0.76) translateY(-20px); opacity: 0; }
-  90% { transform: scale(1.12) translateY(5px); opacity: 1;}
-  100% { transform: scale(1) translateY(0); opacity: 1;}
-}
-`;
-if (typeof document !== "undefined" && !document.getElementById("slidingpuzzle-winkeyframes")) {
-  const style = document.createElement("style");
-  style.id = "slidingpuzzle-winkeyframes";
-  style.innerHTML = winKeyframes;
-  document.head.appendChild(style);
-}
