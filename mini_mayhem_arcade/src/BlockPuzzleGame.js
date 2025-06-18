@@ -68,17 +68,28 @@ function getEmptyBoard() {
   );
 }
 
-// Checks if a shape can fit on the board at any position
-function canPlaceAnywhere(board, shape) {
+/**
+ * Find all valid anchor (row,col) placements for a given shape on the board.
+ * Returns a Set of keys: "row-col"
+ */
+function findValidPlacements(board, shape) {
+  const valid = new Set();
   for (let r = 0; r < BOARD_SIZE; ++r) {
     for (let c = 0; c < BOARD_SIZE; ++c) {
-      if (canPlaceShape(board, shape, r, c)) return true;
+      if (canPlaceShape(board, shape, r, c)) {
+        valid.add(`${r}-${c}`);
+      }
     }
   }
-  return false;
+  return valid;
 }
 
-// Checks if a specific shape can be placed at (row,col) on the board
+// Checks if a shape can fit on the board at any position
+function canPlaceAnywhere(board, shape) {
+  return findValidPlacements(board, shape).size > 0;
+}
+
+// Checks if a specific shape can be placed at (row,col) on the board; all occupied & inside
 function canPlaceShape(board, shape, baseR, baseC) {
   for (const [dr, dc] of shape.cells) {
     const r = baseR + dr, c = baseC + dc;
@@ -207,95 +218,109 @@ function BlockPiece({ shape, onDragStart, dragging, dragId, origin, disabled, on
 const BlockPuzzleGame = () => {
   const [board, setBoard] = useState(getEmptyBoard());
   const [shapes, setShapes] = useState([randomShape(), randomShape(), randomShape()]);
-  const [activeShapeIdx, setActiveShapeIdx] = useState(null); // For drag or tap place
+  const [activeShapeIdx, setActiveShapeIdx] = useState(null); // which block being placed (index)
   const [score, setScore] = useState(0);
   const [lines, setLines] = useState(0);
   const [status, setStatus] = useState("playing"); // playing | over | won
-  const [placingShape, setPlacingShape] = useState(null); // shape, during drag/tap
-  const [boardHover, setBoardHover] = useState(null); // {row,col} for placement hover
+  const [placingShape, setPlacingShape] = useState(null); // shape during drag/tap
+  const [hoverRoot, setHoverRoot] = useState(null); // {row, col, canPlace}
+  const [validPlacements, setValidPlacements] = useState(new Set()); // legal positions for active shape
   const boardRef = useRef();
   const navigate = useNavigate();
 
-  // On mount, reset highscore in state
-  useEffect(()=>setScore(0),[]);
+  // On mount, clear score
+  useEffect(() => setScore(0), []);
+
+  // Track valid legal placements for snapping/feedback
+  useEffect(() => {
+    if (status !== "playing" || activeShapeIdx == null || !shapes[activeShapeIdx]) {
+      setValidPlacements(new Set());
+    } else {
+      setValidPlacements(findValidPlacements(board, shapes[activeShapeIdx]));
+    }
+  }, [activeShapeIdx, shapes, board, status]);
 
   // Handle dropping a shape
   const handleDropShape = useCallback((e, row, col) => {
-    e.preventDefault();
+    e.preventDefault && e.preventDefault();
     if (status !== "playing" || activeShapeIdx == null) return;
     const shape = shapes[activeShapeIdx];
+    // Only snap if perfectly aligned and legal
     if (!canPlaceShape(board, shape, row, col)) return;
     let newBoard = placeShape(board, shape, row, col);
-    let {newBoard: clearedBoard, linesCleared} = clearLines(newBoard);
-    setScore(s=>s + (shape.cells.length * 5) + linesCleared * 30);
-    setLines(l=>l+linesCleared);
+    let { newBoard: clearedBoard, linesCleared } = clearLines(newBoard);
+    setScore(s => s + (shape.cells.length * 5) + linesCleared * 30);
+    setLines(l => l + linesCleared);
     setBoard(clearedBoard);
-    // Remove used shape
+
+    // Remove the played shape and reset active state
     let nextShapes = shapes.slice();
     nextShapes[activeShapeIdx] = randomShape();
     setShapes(nextShapes);
     setActiveShapeIdx(null);
     setPlacingShape(null);
-    setBoardHover(null);
+    setHoverRoot(null);
   }, [board, shapes, activeShapeIdx, status]);
 
-  // Keyboard accessibility: Enter on ghost-cell places
+  // Keyboard accessibility: Enter on valid legal cells
   const handleCellKeyDown = (e, row, col) => {
-    if (e.key === "Enter" && activeShapeIdx !== null) {
+    if (e.key === "Enter" && activeShapeIdx !== null && validPlacements.has(`${row}-${col}`)) {
       e.preventDefault();
       handleDropShape(e, row, col);
     }
   };
 
-  // Drag events
+  // Drag: on start, mark shape as active and compute feedback
   const handleDragStart = (e, shape, index) => {
     setActiveShapeIdx(index);
     setPlacingShape(shape);
-    e.dataTransfer.effectAllowed = "copyMove";
+    e.dataTransfer.effectAllowed = "move";
     e.dataTransfer.setData("text/shape", JSON.stringify(shape));
   };
-  // Drag over board
+
+  // Drag over: highlight only when exactly on a legal anchor cell
   const handleDragOver = (e, row, col) => {
-    if (activeShapeIdx == null) return;
-    const shape = shapes[activeShapeIdx];
-    setBoardHover({row, col, canPlace: canPlaceShape(board, shape, row, col)});
-    e.preventDefault();
+    if (activeShapeIdx == null || !shapes[activeShapeIdx]) return;
+    const key = `${row}-${col}`;
+    const canSnap = validPlacements.has(key);
+    setHoverRoot({ row, col, canPlace: canSnap });
+    if (canSnap) e.preventDefault(); // Allows valid drop only!
   };
-  const handleDragLeave = () => setBoardHover(null);
+  const handleDragLeave = () => setHoverRoot(null);
 
-  // Drop
+  // Drop: only if legal, using precise cell snap
   const handleDrop = (e, row, col) => {
-    handleDropShape(e, row, col);
+    if (validPlacements.has(`${row}-${col}`)) {
+      handleDropShape(e, row, col);
+    }
   };
 
-  // Touch/click to select, tap to place for mobile
+  // Touch/click to select a piece
   const handleTouchSelect = (shape, idx) => {
     if (status !== "playing") return;
     setActiveShapeIdx(idx);
     setPlacingShape(shape);
   };
 
+  // Click board cell to place, but only if legal snap
   const handleCellClick = (row, col) => {
     if (activeShapeIdx == null || status !== "playing") return;
-    const shape = shapes[activeShapeIdx];
-    if (!canPlaceShape(board, shape, row, col)) return;
+    if (!validPlacements.has(`${row}-${col}`)) return;
     let fakeEvt = { preventDefault() {} };
     handleDropShape(fakeEvt, row, col);
   };
 
-  // After move: Check if any move left, else game over
+  // Game Over detection
   useEffect(() => {
     if (status !== "playing") return;
-    let movePossible = shapes.some(shape =>
-      canPlaceAnywhere(board, shape)
-    );
+    let movePossible = shapes.some(shape => canPlaceAnywhere(board, shape));
     if (!movePossible) {
       setStatus("over");
       persistScore(score);
     }
   }, [board, shapes, status, score]);
 
-  // New game
+  // Restart game
   const handleRestart = () => {
     setBoard(getEmptyBoard());
     setShapes([randomShape(), randomShape(), randomShape()]);
@@ -304,7 +329,7 @@ const BlockPuzzleGame = () => {
     setStatus("playing");
     setActiveShapeIdx(null);
     setPlacingShape(null);
-    setBoardHover(null);
+    setHoverRoot(null);
   };
 
   // Home navigation
@@ -315,7 +340,7 @@ const BlockPuzzleGame = () => {
 
   // Instructions
   const instructions =
-    "Drag a block to the grid or (on mobile) tap a block then tap a board spot. Fill rows or columns to clear them for points! Game ends if no move is possible. Try to beat your high score!";
+    "Drag blocks to the board or tap-select a block, then tap a highlighted spot. Only valid, empty target cells snap! Fill rows or columns to clear. Game ends if no fit is left.";
 
   // Arcade style for this game only
   const arcadeCss = `
@@ -469,44 +494,43 @@ const BlockPuzzleGame = () => {
           ref={boardRef}
           tabIndex={0}
           style={{
-            userSelect:"none",
-            // Allow board area to scroll horizontally on mobile if needed
-            overflowX:'auto'
+            userSelect: "none",
+            overflowX: 'auto'
           }}
         >
-          {Array.from({length:BOARD_SIZE*BOARD_SIZE}).map((_, idx) => {
-            const row = Math.floor(idx/BOARD_SIZE);
-            const col = idx%BOARD_SIZE;
+          {Array.from({ length: BOARD_SIZE * BOARD_SIZE }).map((_, idx) => {
+            const row = Math.floor(idx / BOARD_SIZE);
+            const col = idx % BOARD_SIZE;
             const filled = board[row][col];
-            let cellClass="bp-cell";
-            let cellStyle={};
-            // Highlight hover preview for valid drop location
-            if (placingShape && activeShapeIdx !== null && status === "playing") {
+            let cellClass = "bp-cell";
+            let cellStyle = {};
+
+            // Highlight only if this is a valid anchor root for current drag/tap selection
+            if (
+              placingShape &&
+              activeShapeIdx !== null &&
+              status === "playing" &&
+              validPlacements.has(`${row}-${col}`)
+            ) {
+              // Highlight actual target cell using canPlace map
               if (
-                boardHover &&
-                boardHover.row===row &&
-                boardHover.col===col &&
-                boardHover.canPlace
+                (hoverRoot &&
+                  hoverRoot.row === row &&
+                  hoverRoot.col === col &&
+                  hoverRoot.canPlace) ||
+                (hoverRoot == null && activeShapeIdx !== null)
               ) {
-                for (const [dr,dc] of placingShape.cells) {
-                  if (row-dr >=0 && col-dc >=0 && canPlaceShape(board, placingShape, row-dr, col-dc)) {
-                    for (const [ddr, ddc] of placingShape.cells) {
-                      if (row-dr+ddr===row && col-dc+ddc===col) {
-                        cellClass += " bp-cell-hover";
-                        cellStyle.borderColor = "#43E9FF";
-                        break;
-                      }
-                    }
-                  }
-                }
+                cellClass += " bp-cell-hover";
+                cellStyle.borderColor = "#43E9FF";
               }
             }
+
             if (filled) {
               cellClass += " bp-cell-filled";
-              cellStyle = {...cellStyle, "--blockcol": filled};
+              cellStyle = { ...cellStyle, "--blockcol": filled };
             }
             // Disabled fill state if game over
-            if (status==="over" && filled) cellClass += " bp-cell-cannot";
+            if (status === "over" && filled) cellClass += " bp-cell-cannot";
 
             return (
               <div
@@ -515,14 +539,19 @@ const BlockPuzzleGame = () => {
                 tabIndex={0}
                 style={cellStyle}
                 onDragOver={e => {
-                  e.preventDefault();
                   if (
                     status === "playing" &&
                     activeShapeIdx !== null
-                  ) handleDragOver(e, row, col);
+                  ) {
+                    handleDragOver(e, row, col);
+                  }
                 }}
                 onDragLeave={handleDragLeave}
-                onDrop={e => status==="playing"&&activeShapeIdx!==null&&handleDrop(e, row, col)}
+                onDrop={e =>
+                  status === "playing" &&
+                  activeShapeIdx !== null &&
+                  handleDrop(e, row, col)
+                }
                 onClick={() => handleCellClick(row, col)}
                 onKeyDown={e => handleCellKeyDown(e, row, col)}
                 aria-label={filled ? "Filled" : "Empty"}
