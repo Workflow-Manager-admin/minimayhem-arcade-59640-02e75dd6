@@ -11,8 +11,8 @@ asset bundle.js 1.78 MiB [emitted] (name: main)
 asset index.html 1.98 KiB [emitted]
 runtime modules 28.7 KiB 15 modules
 modules by path ./node_modules/ 1.54 MiB 34 modules
-modules by path ./src/ 55 KiB
-  modules by path ./src/*.js 47.5 KiB 5 modules
+modules by path ./src/ 54.9 KiB
+  modules by path ./src/*.js 47.4 KiB 5 modules
   modules by path ./src/*.css 7.49 KiB
     ./src/index.css 2.23 KiB [built] [code generated]
     + 3 modules
@@ -24,33 +24,135 @@ modules by path ./.ve/ 15.1 KiB
   ./.ve/EditorOverlay.jsx 1.58 KiB [built] [code generated]
 webpack 5.99.9 compiled successfully in 1387 ms
 assets by status 1.98 KiB [cached] 1 asset
-assets by path *.js 1.79 MiB
-  asset bundle.js 1.78 MiB [emitted] (name: main)
-  asset main.f2cc8dd5416a0e456a87.hot-update.js 4.5 KiB [emitted] [immutable] [hmr] (name: main)
-asset main.f2cc8dd5416a0e456a87.hot-update.json 28 bytes [emitted] [immutable] [hmr]
-Entrypoint main 1.79 MiB = bundle.js 1.78 MiB main.f2cc8dd5416a0e456a87.hot-update.js 4.5 KiB
-cached modules 1.61 MiB [cached] 47 modules
+assets by path *.js 1.77 MiB
+  asset bundle.js 1.76 MiB [emitted] (name: main)
+  asset main.7e89cfe4e436952c2752.hot-update.js 4.59 KiB [emitted] [immutable] [hmr] (name: main)
+asset main.7e89cfe4e436952c2752.hot-update.json 48 bytes [emitted] [immutable] [hmr]
+Entrypoint main 1.77 MiB = bundle.js 1.76 MiB main.7e89cfe4e436952c2752.hot-update.js 4.59 KiB
+cached modules 1.59 MiB [cached] 46 modules
 runtime modules 28.7 KiB 15 modules
-./src/App.js 1.39 KiB [built] [code generated]
-webpack 5.99.9 compiled successfully in 94 ms
-<i> [webpack-dev-middleware] wait until bundle finished: /
+./src/App.js 1.39 KiB [code generated]
+
+ERROR in ./src/App.js 5:0-36
+Module not found: Error: Can't resolve './GamesPage' in '/home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/src'
+resolve './GamesPage' in '/home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/src'
+  using description file: /home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/package.json (relative path: ./src)
+    Field 'browser' doesn't contain a valid alias configuration
+    using description file: /home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/package.json (relative path: ./src/GamesPage)
+      no extension
+        Field 'browser' doesn't contain a valid alias configuration
+        /home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/src/GamesPage doesn't exist
+      .js
+        Field 'browser' doesn't contain a valid alias configuration
+        /home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/src/GamesPage.js doesn't exist
+      .jsx
+        Field 'browser' doesn't contain a valid alias configuration
+        /home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/src/GamesPage.jsx doesn't exist
+      as directory
+        /home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/src/GamesPage doesn't exist
+ @ ./src/index.js 5:0-24 11:32-35
+
+webpack 5.99.9 compiled with 1 error in 90 ms
+assets by status 1.98 KiB [cached] 1 asset
+assets by path *.js 1.83 MiB
+  asset bundle.js 1.79 MiB [emitted] (name: main)
+  asset main.437cfb303c36db0103e1.hot-update.js 35.4 KiB [emitted] [immutable] [hmr] (name: main)
+asset main.437cfb303c36db0103e1.hot-update.json 28 bytes [emitted] [immutable] [hmr]
+Entrypoint main 1.83 MiB = bundle.js 1.79 MiB main.437cfb303c36db0103e1.hot-update.js 35.4 KiB
+cached modules 1.59 MiB [cached] 46 modules
+runtime modules 28.7 KiB 15 modules
+javascript modules 27.2 KiB
+  ./src/App.js 1.39 KiB [code generated]
+  ./src/GamesPage.js 25.8 KiB [built] [code generated]
+webpack 5.99.9 compiled successfully in 142 ms
+assets by status 1.98 KiB [cached] 1 asset
+assets by path *.js 1.77 MiB
+  asset bundle.js 1.76 MiB [emitted] (name: main)
+  asset main.a5e30ce5f0dc0df53aab.hot-update.js 4.59 KiB [emitted] [immutable] [hmr] (name: main)
+asset main.a5e30ce5f0dc0df53aab.hot-update.json 48 bytes [emitted] [immutable] [hmr]
+Entrypoint main 1.77 MiB = bundle.js 1.76 MiB main.a5e30ce5f0dc0df53aab.hot-update.js 4.59 KiB
+cached modules 1.59 MiB [cached] 46 modules
+runtime modules 28.7 KiB 15 modules
+./src/App.js 1.39 KiB [code generated]
+
+ERROR in ./src/App.js 5:0-36
+Module not found: Error: Can't resolve './GamesPage' in '/home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/src'
+resolve './GamesPage' in '/home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/src'
+  using description file: /home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/package.json (relative path: ./src)
+    Field 'browser' doesn't contain a valid alias configuration
+    using description file: /home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/package.json (relative path: ./src/GamesPage)
+      no extension
+        Field 'browser' doesn't contain a valid alias configuration
+        /home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/src/GamesPage doesn't exist
+      .js
+        Field 'browser' doesn't contain a valid alias configuration
+        /home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/src/GamesPage.js doesn't exist
+      .jsx
+        Field 'browser' doesn't contain a valid alias configuration
+        /home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/src/GamesPage.jsx doesn't exist
+      as directory
+        /home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/src/GamesPage doesn't exist
+ @ ./src/index.js 5:0-24 11:32-35
+
+webpack 5.99.9 compiled with 1 error in 32 ms
+Injecting EditorRootWrapper import: ../.ve/EditorRootWrapper
+assets by status 1.76 MiB [cached] 2 assets
+cached modules 1.59 MiB (javascript) 28.7 KiB (runtime) [cached] 61 modules
+./src/index.js 530 bytes [built]
+
+ERROR in ./src/App.js 5:0-36
+Module not found: Error: Can't resolve './GamesPage' in '/home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/src'
+resolve './GamesPage' in '/home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/src'
+  using description file: /home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/package.json (relative path: ./src)
+    Field 'browser' doesn't contain a valid alias configuration
+    using description file: /home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/package.json (relative path: ./src/GamesPage)
+      no extension
+        Field 'browser' doesn't contain a valid alias configuration
+        /home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/src/GamesPage doesn't exist
+      .js
+        Field 'browser' doesn't contain a valid alias configuration
+        /home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/src/GamesPage.js doesn't exist
+      .jsx
+        Field 'browser' doesn't contain a valid alias configuration
+        /home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/src/GamesPage.jsx doesn't exist
+      as directory
+        /home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/src/GamesPage doesn't exist
+ @ ./src/index.js 5:0-24 11:32-35
+
+webpack 5.99.9 compiled with 1 error in 44 ms
+assets by status 1.76 MiB [cached] 2 assets
+cached modules 1.59 MiB (javascript) 28.7 KiB (runtime) [cached] 61 modules
+./src/App.js 1.39 KiB [built]
+
+ERROR in ./src/App.js 5:0-36
+Module not found: Error: Can't resolve './GamesPage' in '/home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/src'
+resolve './GamesPage' in '/home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/src'
+  using description file: /home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/package.json (relative path: ./src)
+    Field 'browser' doesn't contain a valid alias configuration
+    using description file: /home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/package.json (relative path: ./src/GamesPage)
+      no extension
+        Field 'browser' doesn't contain a valid alias configuration
+        /home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/src/GamesPage doesn't exist
+      .js
+        Field 'browser' doesn't contain a valid alias configuration
+        /home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/src/GamesPage.js doesn't exist
+      .jsx
+        Field 'browser' doesn't contain a valid alias configuration
+        /home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/src/GamesPage.jsx doesn't exist
+      as directory
+        /home/kavia/workspace/code-generation/minimayhem-arcade-59640-02e75dd6/mini_mayhem_arcade/src/GamesPage doesn't exist
+ @ ./src/index.js 5:0-24 11:32-35
+
+webpack 5.99.9 compiled with 1 error in 39 ms
 assets by status 1.98 KiB [cached] 1 asset
 assets by path *.js 1.81 MiB
   asset bundle.js 1.78 MiB [emitted] (name: main)
-  asset main.18d17d0a0e5f9d34bd78.hot-update.js 28.8 KiB [emitted] [immutable] [hmr] (name: main)
-asset main.18d17d0a0e5f9d34bd78.hot-update.json 28 bytes [emitted] [immutable] [hmr]
-Entrypoint main 1.81 MiB = bundle.js 1.78 MiB main.18d17d0a0e5f9d34bd78.hot-update.js 28.8 KiB
-cached modules 1.59 MiB [cached] 47 modules
+  asset main.826c3f5847ae273720c6.hot-update.js 25.5 KiB [emitted] [immutable] [hmr] (name: main)
+asset main.826c3f5847ae273720c6.hot-update.json 28 bytes [emitted] [immutable] [hmr]
+Entrypoint main 1.81 MiB = bundle.js 1.78 MiB main.826c3f5847ae273720c6.hot-update.js 25.5 KiB
+cached modules 1.59 MiB [cached] 46 modules
 runtime modules 28.7 KiB 15 modules
-./src/LandingPage.js 22.2 KiB [built] [code generated]
-webpack 5.99.9 compiled successfully in 115 ms
-assets by status 1.98 KiB [cached] 1 asset
-assets by path *.js 1.81 MiB
-  asset bundle.js 1.78 MiB [emitted] (name: main)
-  asset main.1c80f3bd6c79315946b7.hot-update.js 28.4 KiB [emitted] [immutable] [hmr] (name: main)
-asset main.1c80f3bd6c79315946b7.hot-update.json 28 bytes [emitted] [immutable] [hmr]
-Entrypoint main 1.81 MiB = bundle.js 1.78 MiB main.1c80f3bd6c79315946b7.hot-update.js 28.4 KiB
-cached modules 1.59 MiB [cached] 47 modules
-runtime modules 28.7 KiB 15 modules
-./src/LandingPage.js 22 KiB [built] [code generated]
-webpack 5.99.9 compiled successfully in 85 ms
+javascript modules 17.5 KiB
+  ./src/App.js 1.4 KiB [built] [code generated]
+  ./src/ArcadeGamesPage.js 16.1 KiB [built] [code generated]
+webpack 5.99.9 compiled successfully in 86 ms

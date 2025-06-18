@@ -2,7 +2,7 @@ import React from 'react';
 import './App.css';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import LandingPage from './LandingPage';
-import GamesPage from './GamesPage';
+import GamesPage from './ArcadeGamesPage';
 import Navbar from './Navbar';
 
 // PUBLIC_INTERFACE
