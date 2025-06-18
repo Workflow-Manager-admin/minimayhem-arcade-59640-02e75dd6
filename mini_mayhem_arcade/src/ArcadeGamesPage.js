@@ -332,15 +332,7 @@ const ARCADE_GAMES = [
     color: "#FFD600",
     bg: "linear-gradient(120deg,#ffd600 40%,#43e9ff 90%)",
   },
-  {
-    key: "memory-match",
-    title: "Memory Match",
-    desc: "Flip and match cards. How sharp is your memory? Find out now!",
-    icon: "🃏",
-    route: "/games/memory-match",
-    color: "#ef47cb",
-    bg: "linear-gradient(120deg,#a820c5 40%,#ef47cb 90%)",
-  },
+  // Removed Memory Match Card
   {
     key: "reaction-speed",
     title: "Reaction Speed",
