@@ -13,6 +13,7 @@ const DIFFICULTIES = {
   medium: { size: 8, label: "Medium (8×8)", pairs: 32 },
   hard: { size: 15, label: "Hard (15×15)", pairs: 112 } // Actually 225 slots — 112 pairs, 1 solo
 };
+// Strong emoji pool, wide unicode icons for variety and kid/arcade vibe
 const EMOJI_POOL =
   "🥨👾🎮🐳💎🎲🦄🎯🚀🍕🦕🍀🧩🐙🌮🧠⚽🦘💡🚦🧃🍩🍉🐢🍔🥕🍦🚓🦋🧸🥇⚡🐸🎵🍭🍿🎃🦁🎈🥁🍟🐼🍋🚲🐤🖖🦂🌻📀🍄🦅🍓🐺🧚‍♂️".split(
     ""
@@ -45,9 +46,6 @@ function getShuffledEmojiPairs(numPairs) {
 
 // LocalStorage keys
 const HIGHSCORE_KEY = diff => `mma_mm_highscore_${diff}`;
-/**
- * Load high score from localStorage (best fewest tries or fastest).
- */
 function getHighScore(diffKey) {
   const str = window.localStorage.getItem(HIGHSCORE_KEY(diffKey));
   // {tries: N, time: X}
@@ -140,13 +138,26 @@ const MemoryMatchGame = () => {
       transition:box-shadow 0.14s,background .12s,transform .11s;
       will-change:transform;
       min-width:32px;min-height:32px;
+      /* Let emoji font-override take precedence on children/card-front */
     }
     .mm-card.flipped,.mm-card.matched {
       background:linear-gradient(118deg,#FFD600 63%,#43E9FF 100%);
-      color:#0e0050;box-shadow:0 5px 22px #FFD60099,0 3px 12px #43E9FF55;
-      font-weight:700;font-size:clamp(1.5rem,2.6vw,2.7rem);
+      color:#0e0050;
+      box-shadow:0 5px 22px #FFD60099,0 3px 12px #43E9FF55;
+      font-weight: normal;
+      font-size:clamp(1.5rem,2.6vw,2.7rem);
       border-color:#FFD60055;
       z-index:4;
+    }
+    .mm-card.flipped span,
+    .mm-card.matched span,
+    .mm-card.flipped > span > span,
+    .mm-card.matched > span > span {
+      font-family: Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji, Android Emoji, EmojiOne Mozilla, sans-serif !important;
+      font-weight: normal !important;
+      color: inherit !important;
+      background: none !important;
+      text-shadow: none;
     }
     .mm-card.flipped { animation: mmflip .19s cubic-bezier(.26,1.51,.63,1.09);}
     @keyframes mmflip {0%{transform:scaleY(0.25);}60%{transform:scaleY(1.12);}100%{transform:scaleY(1);}}
@@ -402,10 +413,21 @@ const MemoryMatchGame = () => {
                       justifyContent: "center",
                       width: "100%",
                       height: "100%",
+                      // Emoji-specific: important overrides, use emoji font family
                       fontSize: emojiFont,
-                      lineHeight: 1,
+                      lineHeight: 1.11,
+                      fontWeight: "normal",
+                      fontFamily:
+                        "Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji, Android Emoji, EmojiOne Mozilla, sans-serif",
+                      WebkitFontSmoothing: "auto",
+                      MozOsxFontSmoothing: "auto",
+                      letterSpacing: "0",
                       textShadow: "0 2px 10px #FFD60090, 0 0 18px #43E9FF88",
                       transition: "0.1s",
+                      background: "none",
+                      color: "inherit",
+                      boxShadow: "none",
+                      userSelect: "none",
                     }}
                     aria-hidden={!isFlipped}
                   >
@@ -430,6 +452,7 @@ const MemoryMatchGame = () => {
                       textShadow: "0 2px 12px #2323e6a4",
                       transition: "background 0.13s, color 0.1s",
                       border: "2.1px dashed #FFD60076",
+                      fontFamily: "Apple Color Emoji, Segoe UI Emoji, 'Press Start 2P', Noto Color Emoji, sans-serif",
                     }}
                     aria-hidden={isFlipped}
                   >
