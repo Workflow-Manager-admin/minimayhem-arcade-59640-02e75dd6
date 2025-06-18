@@ -5,6 +5,7 @@ import LandingPage from './LandingPage';
 import GamesPage from './ArcadeGamesPage';
 import Navbar from './Navbar';
 import BlockPuzzleGame from './BlockPuzzleGame';
+import MemoryMatchGame from './MemoryMatchGame';
 
 // PUBLIC_INTERFACE
 /**
@@ -21,6 +22,7 @@ function App() {
           <Route path="/" element={<LandingPage />} />
           <Route path="/games" element={<GamesPage />} />
           <Route path="/games/block-puzzle" element={<BlockPuzzleGame />} />
+          <Route path="/games/memory-match" element={<MemoryMatchGame />} />
           {/* Future: more routes, e.g., <Route path="/top-games" element={<TopGamesPage />} /> */}
         </Routes>
       </div>
