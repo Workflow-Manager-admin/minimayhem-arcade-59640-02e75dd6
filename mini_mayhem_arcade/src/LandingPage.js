@@ -1,15 +1,15 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback, useMemo, Suspense, lazy } from "react";
 import Navbar from "./Navbar";
 
 // PUBLIC_INTERFACE
 /**
- * MiniMayhem Arcade Landing Page
+ * MiniMayhem Arcade Landing Page (Optimized)
  * - Enhanced Navbar (with Settings dropdown)
  * - Hero Section: animated pixel/arcade background, intro text, CTA buttons
  * - Feature Grid: six games/cards, icons, descriptions, play buttons, effects
- * - Fun API Section: joke/quote/fun fact
+ * - Fun API Section: joke/quote/fun fact (lazy-loaded for perf)
  * - Vibrant Footer with arcade styling
- * Uses pixel/arcade fonts and responsive layout.
+ * Uses pixel/arcade fonts and responsive layout. Performance improvements: memo, lazy, split render, CSS animation, reduced unnecessary effect triggers.
  */
 const arcadeFonts = `
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Orbitron:wght@700&display=swap');
@@ -20,19 +20,25 @@ const arcadeFonts = `
 `;
 
 const arcadeCss = `
+.arcade-bg-css-fadein {
+  animation: arcadeBgFade 1.35s cubic-bezier(.79,-0.15,.39,1.41) both;
+}
+@keyframes arcadeBgFade {
+  0% { opacity: 0; filter: brightness(0.75) blur(2px);}
+  75% { opacity: 0.8; filter: blur(0.3px);}
+  100% { opacity: 1; filter: none;}
+}
 .arcade-bg-animated {
   position: absolute;
   top:0; left:0; right:0; bottom:0;
-  z-index:0;
-  pointer-events:none;
+  z-index:0; pointer-events:none;
   overflow:hidden;
 }
 .arcade-bg-pixels {
   position: absolute;
   top:0; left:0; right:0; bottom:0;
-  z-index:0;
-  pointer-events: none;
-  opacity: 0.18;
+  z-index:0; pointer-events: none;
+  opacity: 0.13;
 }
 @media (max-width: 600px) {
   .arcade-hero-title { font-size: 1.5rem !important; }
@@ -233,7 +239,7 @@ const SOCIALS = [
 ];
 
 // Small Animated Pixel Dot Field for Background
-function AnimatedArcadeBg() {
+const AnimatedArcadeBg = React.memo(function AnimatedArcadeBg() {
   const canvasRef = useRef();
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -257,7 +263,7 @@ function AnimatedArcadeBg() {
       dx: (Math.random()<0.5?-0.2:0.2)*(0.8+Math.random()*1),
       dy: (Math.random()<0.5?-0.2:0.2)*(0.3+Math.random()*0.6)
     }));
-    function draw(time) {
+    function draw() {
       ctx.clearRect(0,0,canvas.width,canvas.height);
       pxs.forEach(p=>{
         ctx.beginPath();
@@ -283,22 +289,23 @@ function AnimatedArcadeBg() {
   return (
     <canvas
       ref={canvasRef}
-      className="arcade-bg-animated"
+      className="arcade-bg-animated arcade-bg-css-fadein"
       style={{
         width: "100vw",
         height: 340,
         minHeight: 200,
         background: "radial-gradient(circle, #5118ea 37%, #ffa90064 100%)",
-        opacity: 0.38,
+        opacity: 0.32,
       }}
       tabIndex={-1}
       aria-hidden="true"
+      loading="lazy"
     />
   );
-}
+});
 
 // Enhanced Navbar with Settings Dropdown
-function NavbarWithSettings() {
+const NavbarWithSettings = React.memo(function NavbarWithSettings() {
   const [open, setOpen] = useState(false);
   const settingsRef = useRef();
   // Basic click-outside closing
@@ -354,17 +361,24 @@ function NavbarWithSettings() {
       </div>
     </div>
   );
-}
+});
 
-// Fun API: Random Joke or "fun fact" (can be stubbed if offline)
-function FunAPI() {
+// Thin suspense fallback for API
+const FunAPILoader = () => (
+  <section className="arcade-funapi-section" style={{ color: "#c1e9fc", fontFamily: "'Orbitron','VT323',monospace" }}>
+    <div className="arcade-funapi-bubble arcade-font" style={{ opacity: 0.65 }}>
+      Loading fun fact...
+    </div>
+  </section>
+);
+
+// Fun API: Random Joke or "fun fact" (lazy-loaded to avoid heavy-initial render)
+const FunAPI = React.memo(function FunAPI() {
   const [result, setResult] = useState({ text: "Loading a fun fact for you..." });
   const [loading, setLoading] = useState(false);
-
-  // Try public fun API, fallback to "hardcoded fun"
-  const fetchFact = async () => {
+  // Memoize fetch callback to avoid re-creation
+  const fetchFact = useCallback(async () => {
     setLoading(true);
-    // Copied and slightly randomized: Joke API, Fallback.
     let url = Math.random() > 0.4
       ? "https://uselessfacts.jsph.pl/api/v2/facts/random"
       : "https://official-joke-api.appspot.com/random_joke";
@@ -389,10 +403,9 @@ function FunAPI() {
       setResult({ text: fallback[Math.floor(Math.random() * fallback.length)] });
     }
     setLoading(false);
-  };
-
-  useEffect(() => { fetchFact(); }, []);
-
+  }, []);
+  // useEffect, deps []
+  useEffect(() => { fetchFact(); }, [fetchFact]);
   return (
     <section className="arcade-funapi-section">
       <div className="arcade-funapi-bubble arcade-font" tabIndex="0" aria-live="polite">
@@ -404,9 +417,42 @@ function FunAPI() {
       </div>
     </section>
   );
+});
+
+// Prepare lazy-loading for FunAPI section, avoid render until in view
+const LazyFunAPI = lazy(() =>
+  // intentional late import - simple stub since FunAPI is in same file
+  Promise.resolve({ default: FunAPI })
+);
+
+/**
+ * Hook to check if an element is in the viewport.
+ * Returns: [isVisible, ref]
+ */
+function useVisibility(threshold = 0.33) {
+  const [visible, setVisible] = useState(false);
+  const ref = useRef();
+  useEffect(() => {
+    const current = ref.current;
+    if (!current) return;
+    let observer;
+    if ("IntersectionObserver" in window) {
+      observer = new window.IntersectionObserver(
+        ([entry]) => setVisible(entry.isIntersecting || entry.intersectionRatio > 0),
+        { threshold }
+      );
+      observer.observe(current);
+    } else {
+      // Always visible fallback
+      setVisible(true);
+    }
+    return () => { if (observer && current) observer.unobserve(current); };
+  }, [threshold]);
+  return [visible, ref];
 }
 
-function HeroSection() {
+// Hero Section
+const HeroSection = React.memo(function HeroSection() {
   return (
     <header style={{
       minHeight: 390,
@@ -454,28 +500,60 @@ function HeroSection() {
       </div>
     </header>
   );
-}
+});
 
-function FeatureGrid() {
+// Individual feature card (memo)
+const FeatureCard = React.memo(function FeatureCard({ icon, title, desc, route }) {
+  return (
+    <div className="arcade-feature-card" tabIndex={0} aria-label={`Play ${title}`}>
+      <div className="arcade-feature-icon">{icon}</div>
+      <div className="arcade-feature-title">{title}</div>
+      <div className="arcade-feature-desc">{desc}</div>
+      <a href={route} className="arcade-card-btn" tabIndex={0} aria-label={`Play ${title} now!`}>
+        Play&nbsp;▶
+      </a>
+    </div>
+  );
+});
+
+// Feature Grid (memoized)
+const FeatureGrid = React.memo(function FeatureGrid() {
+  // Memoize to avoid rerender
+  const cards = useMemo(
+    () =>
+      featureGames.map((g) => (
+        <FeatureCard key={g.title} icon={g.icon} title={g.title} desc={g.desc} route={g.route} />
+      )),
+    []
+  );
   return (
     <section id="feature-grid">
       <div className="arcade-feature-grid">
-        {featureGames.map(g =>
-          <div className="arcade-feature-card" tabIndex={0} key={g.title} aria-label={`Play ${g.title}`}>
-            <div className="arcade-feature-icon">{g.icon}</div>
-            <div className="arcade-feature-title">{g.title}</div>
-            <div className="arcade-feature-desc">{g.desc}</div>
-            <a href={g.route} className="arcade-card-btn" tabIndex={0} aria-label={`Play ${g.title} now!`}>
-              Play&nbsp;▶
-            </a>
-          </div>
-        )}
+        {cards}
       </div>
     </section>
   );
-}
+});
 
-function ArcadeFooter() {
+// Arcade Footer (memoized with memoized socials/links)
+const ArcadeFooter = React.memo(function ArcadeFooter() {
+  const socials = useMemo(
+    () =>
+      SOCIALS.map((s) => (
+        <a key={s.title} href={s.url} title={s.title} target="_blank" rel="noopener noreferrer">{s.icon}</a>
+      )),
+    []
+  );
+  const links = useMemo(
+    () => [
+      <a href="#" key="terms">Terms</a>,
+      <span key="dot1">•</span>,
+      <a href="#" key="privacy">Privacy</a>,
+      <span key="dot2">•</span>,
+      <a href="#" key="contact">Contact</a>
+    ],
+    []
+  );
   return (
     <footer className="arcade-footer-main arcade-footer">
       <div>
@@ -483,40 +561,45 @@ function ArcadeFooter() {
           Made with <span role="img" aria-label="love" style={{ color: "#ff59b9", fontWeight: 700 }}>❤️</span>
         </span> by MiniMayhem Team
       </div>
-      <div className="arcade-footer-social">
-        {SOCIALS.map(s =>
-          <a key={s.title} href={s.url} title={s.title} target="_blank" rel="noopener noreferrer">{s.icon}</a>
-        )}
-      </div>
-      <div className="arcade-footer-links">
-        <a href="#">Terms</a>
-        <span>•</span>
-        <a href="#">Privacy</a>
-        <span>•</span>
-        <a href="#">Contact</a>
-      </div>
+      <div className="arcade-footer-social">{socials}</div>
+      <div className="arcade-footer-links">{links}</div>
     </footer>
   );
-}
+});
 
-const LandingPage = () => (
-  <>
-    <style>{arcadeFonts + arcadeCss}</style>
-    <NavbarWithSettings />
-    <div style={{
-      position: "relative",
-      minHeight: "100vh",
-      background: "linear-gradient(120deg, #1a0034 0%, #5118ea 30%, #ffd600 98%)",
-      overflow: "hidden", zIndex: 0
-    }}>
-      <HeroSection />
-      <div className="container" style={{ paddingTop: 36, zIndex: 2, position: "relative" }}>
-        <FeatureGrid />
-        <div id="fun-api"><FunAPI /></div>
+// The main page (memoize top-level for static props)
+const LandingPage = React.memo(() => {
+  // FunAPI section visibility
+  const [funVisible, funApiRef] = useVisibility(0.09); // trigger slightly before in view
+
+  return (
+    <>
+      <style>{arcadeFonts + arcadeCss}</style>
+      <NavbarWithSettings />
+      <div style={{
+        position: "relative",
+        minHeight: "100vh",
+        background: "linear-gradient(120deg, #1a0034 0%, #5118ea 30%, #ffd600 98%)",
+        overflow: "hidden", zIndex: 0
+      }}>
+        <HeroSection />
+        <div className="container" style={{ paddingTop: 36, zIndex: 2, position: "relative" }}>
+          <FeatureGrid />
+          <div id="fun-api" ref={funApiRef} style={{ minHeight: 120 }}>
+            {/* Use Suspense fallback and lazy load FunAPI */}
+            {funVisible ? (
+              <Suspense fallback={<FunAPILoader />}>
+                <LazyFunAPI />
+              </Suspense>
+            ) : (
+              <FunAPILoader />
+            )}
+          </div>
+        </div>
+        <ArcadeFooter />
       </div>
-      <ArcadeFooter />
-    </div>
-  </>
-);
+    </>
+  );
+});
 
 export default LandingPage;
