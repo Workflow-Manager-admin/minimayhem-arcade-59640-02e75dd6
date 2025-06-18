@@ -12,8 +12,8 @@ asset index.html 1.98 KiB [emitted]
 runtime modules 28.7 KiB 15 modules
 cacheable modules 1.77 MiB
   modules by path ./node_modules/ 1.54 MiB 34 modules
-  modules by path ./src/ 216 KiB
-    modules by path ./src/*.js 209 KiB 12 modules
+  modules by path ./src/ 221 KiB
+    modules by path ./src/*.js 213 KiB 12 modules
     modules by path ./src/*.css 7.49 KiB
       ./src/index.css 2.23 KiB [built] [code generated]
       + 3 modules
@@ -23,14 +23,4 @@ cacheable modules 1.77 MiB
       ./.ve/EditorOverlay.css 2.25 KiB [built] [code generated]
       ./node_modules/css-loader/dist/cjs.js!./.ve/EditorOverlay.css 697 bytes [built] [code generated]
     ./.ve/EditorOverlay.jsx 1.58 KiB [built] [code generated]
-webpack 5.99.9 compiled successfully in 1723 ms
-assets by status 1.98 KiB [cached] 1 asset
-assets by path *.js 2.01 MiB
-  asset bundle.js 1.98 MiB [emitted] (name: main)
-  asset main.ca415fa5af2d19378e05.hot-update.js 33.7 KiB [emitted] [immutable] [hmr] (name: main)
-asset main.ca415fa5af2d19378e05.hot-update.json 28 bytes [emitted] [immutable] [hmr]
-Entrypoint main 2.01 MiB = bundle.js 1.98 MiB main.ca415fa5af2d19378e05.hot-update.js 33.7 KiB
-cached modules 1.74 MiB [cached] 54 modules
-runtime modules 28.7 KiB 15 modules
-./src/ArcadeGamesPage.js 27.7 KiB [built] [code generated]
-webpack 5.99.9 compiled successfully in 273 ms
+webpack 5.99.9 compiled successfully in 1818 ms
