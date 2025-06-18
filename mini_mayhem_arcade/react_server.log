@@ -7,13 +7,13 @@
 <i> [webpack-dev-server] On Your Network (IPv4): http://172.17.0.2:3000/
 <i> [webpack-dev-server] Content not from webpack is served from './public' directory
 Injecting EditorRootWrapper import: ../.ve/EditorRootWrapper
-asset bundle.js 1.98 MiB [emitted] (name: main)
+asset bundle.js 1.99 MiB [emitted] (name: main)
 asset index.html 1.98 KiB [emitted]
 runtime modules 28.7 KiB 15 modules
 cacheable modules 1.77 MiB
   modules by path ./node_modules/ 1.54 MiB 34 modules
-  modules by path ./src/ 219 KiB
-    modules by path ./src/*.js 211 KiB 13 modules
+  modules by path ./src/ 223 KiB
+    modules by path ./src/*.js 216 KiB 13 modules
     modules by path ./src/*.css 7.49 KiB
       ./src/index.css 2.23 KiB [built] [code generated]
       + 3 modules
@@ -23,14 +23,14 @@ cacheable modules 1.77 MiB
       ./.ve/EditorOverlay.css 2.25 KiB [built] [code generated]
       ./node_modules/css-loader/dist/cjs.js!./.ve/EditorOverlay.css 697 bytes [built] [code generated]
     ./.ve/EditorOverlay.jsx 1.58 KiB [built] [code generated]
-webpack 5.99.9 compiled successfully in 1729 ms
+webpack 5.99.9 compiled successfully in 1748 ms
 assets by status 1.98 KiB [cached] 1 asset
-assets by path *.js 2 MiB
-  asset bundle.js 1.99 MiB [emitted] (name: main)
-  asset main.2f09a3196aa76b863654.hot-update.js 13.5 KiB [emitted] [immutable] [hmr] (name: main)
-asset main.2f09a3196aa76b863654.hot-update.json 28 bytes [emitted] [immutable] [hmr]
-Entrypoint main 2 MiB = bundle.js 1.99 MiB main.2f09a3196aa76b863654.hot-update.js 13.5 KiB
-cached modules 1.76 MiB [cached] 55 modules
+assets by path *.js 1.96 MiB
+  asset bundle.js 1.96 MiB [emitted] (name: main)
+  asset main.f871a67f5f327182d871.hot-update.js 3.97 KiB [emitted] [immutable] [hmr] (name: main)
+asset main.f871a67f5f327182d871.hot-update.json 28 bytes [emitted] [immutable] [hmr]
+Entrypoint main 1.96 MiB = bundle.js 1.96 MiB main.f871a67f5f327182d871.hot-update.js 3.97 KiB
+cached modules 1.75 MiB [cached] 55 modules
 runtime modules 28.7 KiB 15 modules
-./src/TopGamesPage.js 10 KiB [built] [code generated]
-webpack 5.99.9 compiled successfully in 211 ms
+./src/LandingPage.js 1.65 KiB [built] [code generated]
+webpack 5.99.9 compiled successfully in 113 ms
