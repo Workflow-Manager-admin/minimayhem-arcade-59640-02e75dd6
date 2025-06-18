@@ -7,12 +7,12 @@
 <i> [webpack-dev-server] On Your Network (IPv4): http://172.17.0.2:3000/
 <i> [webpack-dev-server] Content not from webpack is served from './public' directory
 Injecting EditorRootWrapper import: ../.ve/EditorRootWrapper
-asset bundle.js 1.78 MiB [emitted] (name: main)
+asset bundle.js 1.79 MiB [emitted] (name: main)
 asset index.html 1.98 KiB [emitted]
 runtime modules 28.7 KiB 15 modules
 modules by path ./node_modules/ 1.54 MiB 34 modules
-modules by path ./src/ 55 KiB
-  modules by path ./src/*.js 47.6 KiB 5 modules
+modules by path ./src/ 65.3 KiB
+  modules by path ./src/*.js 57.8 KiB 5 modules
   modules by path ./src/*.css 7.49 KiB
     ./src/index.css 2.23 KiB [built] [code generated]
     + 3 modules
@@ -22,14 +22,16 @@ modules by path ./.ve/ 15.1 KiB
     ./.ve/EditorOverlay.css 2.25 KiB [built] [code generated]
     ./node_modules/css-loader/dist/cjs.js!./.ve/EditorOverlay.css 697 bytes [built] [code generated]
   ./.ve/EditorOverlay.jsx 1.58 KiB [built] [code generated]
-webpack 5.99.9 compiled successfully in 1398 ms
+webpack 5.99.9 compiled successfully in 1397 ms
 assets by status 1.98 KiB [cached] 1 asset
-assets by path *.js 1.83 MiB
-  asset bundle.js 1.79 MiB [emitted] (name: main)
-  asset main.f66c25a26702540b8062.hot-update.js 32.5 KiB [emitted] [immutable] [hmr] (name: main)
-asset main.f66c25a26702540b8062.hot-update.json 28 bytes [emitted] [immutable] [hmr]
-Entrypoint main 1.83 MiB = bundle.js 1.79 MiB main.f66c25a26702540b8062.hot-update.js 32.5 KiB
-cached modules 1.59 MiB [cached] 47 modules
+assets by path *.js 1.85 MiB
+  asset bundle.js 1.82 MiB [emitted] (name: main)
+  asset main.b965f278e6146dca4e24.hot-update.js 31.7 KiB [emitted] [immutable] [hmr] (name: main)
+asset main.b965f278e6146dca4e24.hot-update.json 28 bytes [emitted] [immutable] [hmr]
+Entrypoint main 1.85 MiB = bundle.js 1.82 MiB main.b965f278e6146dca4e24.hot-update.js 31.7 KiB
+cached modules 1.62 MiB [cached] 47 modules
 runtime modules 28.7 KiB 15 modules
-./src/ArcadeGamesPage.js 26.4 KiB [built] [code generated]
-webpack 5.99.9 compiled successfully in 193 ms
+javascript modules 24.1 KiB
+  ./src/App.js 1.68 KiB [built] [code generated]
+  ./src/BlockPuzzleGame.js 22.5 KiB [built] [code generated]
+webpack 5.99.9 compiled successfully in 194 ms

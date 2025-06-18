@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import LandingPage from './LandingPage';
 import GamesPage from './ArcadeGamesPage';
 import Navbar from './Navbar';
+import BlockPuzzleGame from './BlockPuzzleGame';
 
 // PUBLIC_INTERFACE
 /**
@@ -19,6 +20,7 @@ function App() {
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/games" element={<GamesPage />} />
+          <Route path="/games/block-puzzle" element={<BlockPuzzleGame />} />
           {/* Future: more routes, e.g., <Route path="/top-games" element={<TopGamesPage />} /> */}
         </Routes>
       </div>
