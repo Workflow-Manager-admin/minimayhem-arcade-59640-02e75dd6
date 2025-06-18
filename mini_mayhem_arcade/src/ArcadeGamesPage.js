@@ -1,153 +1,176 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
 
 // PUBLIC_INTERFACE
 /**
- * Renders the central Arcade Games page: displays a grid of available mini games.
- * - "Surprise Me" button selects a random game for the user to play.
- * - No Fun Zone content/APIs or related fetch/state logic.
+ * MiniMayhem Arcade - Games Page
+ *
+ * Displays arcade header, game grid (mini games), and Surprise Me button.
+ * Stripped of all Fun Zone API fetch logic, fun content, jokes, quotes, and numbers.
+ * Only pure UI for games and Surprise Me functionality remains.
  */
-const GAME_LIST = [
+
+const GAMES = [
   {
-    key: "block-puzzle",
-    title: "Block Puzzle",
-    emoji: "🟪",
-    description: "Arrange falling blocks and clear lines in this classic grid challenge.",
+    name: "Block Puzzle",
+    route: "/games/block-puzzle",
+    emoji: "🟦",
+    description: "Test your spatial IQ in this classic block game.",
   },
   {
-    key: "memory-match",
-    title: "Memory Match",
+    name: "Memory Match",
+    route: "/games/memory-match",
     emoji: "🧠",
-    description: "Flip over cards to find pairs. How good is your memory?",
+    description: "How sharp is your memory? Find matching pairs.",
   },
   {
-    key: "memory-puzzle",
-    title: "Memory Puzzle",
+    name: "Memory Puzzle",
+    route: "/games/memory-puzzle",
     emoji: "🧩",
-    description: "Remember and repeat the sequence. Train your brain speed!",
+    description: "Visual memory challenge. Remember, then solve!",
   },
   {
-    key: "reaction-speed",
-    title: "Reaction Speed",
+    name: "Reaction Speed",
+    route: "/games/reaction-speed",
     emoji: "⚡",
-    description: "Test your reflexes against the clock — are you quick enough?",
+    description: "How fast can you react? Beat your best time.",
   },
   {
-    key: "word-typing",
-    title: "Word Typing",
+    name: "Word Typing",
+    route: "/games/word-typing",
     emoji: "⌨️",
-    description: "Type words accurately and fast before the timer runs out.",
+    description: "Type the given words as fast and accurately as possible.",
   },
   {
-    key: "sudoku",
-    title: "Sudoku",
+    name: "Sudoku",
+    route: "/games/sudoku",
     emoji: "🔢",
-    description: "Fill in the grid — classic logic puzzle for puzzle enthusiasts.",
+    description: "Logic and numbers! Solve Sudoku puzzles.",
   },
   {
-    key: "sliding-puzzle",
-    title: "Sliding Puzzle",
+    name: "Sliding Puzzle",
+    route: "/games/sliding-puzzle",
     emoji: "🧊",
-    description: "Slide tiles into place to recreate the picture or sequence.",
+    description: "Slide the tiles to solve the picture puzzle.",
   },
 ];
 
-function getRandomGameRoute() {
-  const randomIndex = Math.floor(Math.random() * GAME_LIST.length);
-  return `/games/${GAME_LIST[randomIndex].key}`;
-}
+const gameCardStyle = {
+  background: "linear-gradient(111deg, #232b67 0%, #28398b 100%)",
+  border: "2px solid rgba(255,255,255,0.10)",
+  borderRadius: 14,
+  padding: 24,
+  textAlign: "center",
+  boxShadow: "0 3px 24px 0 #00000025",
+  color: "#FFF",
+  minWidth: 160,
+  position: "relative",
+  transition: "transform 0.21s, box-shadow 0.23s",
+  cursor: "pointer",
+  margin: 0,
+  outline: "none",
+};
 
-// PUBLIC_INTERFACE
+const gameGridStyle = {
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))",
+  gap: 28,
+  marginTop: 36,
+  marginBottom: 12,
+};
+
+const headerStyle = {
+  textAlign: "center",
+  marginTop: 78,
+  marginBottom: 22,
+  color: "#fff",
+  fontFamily: "'Orbitron', 'Arial', sans-serif",
+  textShadow: "0 2px 20px #425dff55",
+};
+
+const btnSurprise = {
+  background: "linear-gradient(93deg,#ff6347 0%,#FFC107 100%)",
+  color: "#fff",
+  border: "none",
+  borderRadius: 7,
+  fontWeight: "700",
+  fontFamily: "'Orbitron',sans-serif",
+  fontSize: "1.05rem",
+  padding: "13px 32px",
+  cursor: "pointer",
+  boxShadow: "0 4px 20px 0 #ffae0072",
+  margin: "34px auto 10px auto",
+  display: "block",
+  transition: "transform 0.17s, box-shadow 0.15s",
+};
+
+const subheaderStyle = {
+  color: "#FFD600",
+  fontSize: "1.42rem",
+  fontWeight: "bolder",
+  letterSpacing: 0.6,
+  marginBottom: 6,
+  marginTop: 8,
+};
+
 function ArcadeGamesPage() {
-  const navigate = useNavigate();
-
-  // Handler for the "Surprise Me" button.
-  // Navigates user to a random game.
-  function handleSurpriseMe() {
-    navigate(getRandomGameRoute());
-  }
+  // Surprise Me handler: pick a random game and navigate.
+  const handleSurprise = () => {
+    const games = GAMES;
+    const rand = Math.floor(Math.random() * games.length);
+    window.location.href = games[rand].route;
+  };
 
   return (
-    <div className="container" style={{ paddingTop: 72, paddingBottom: 64 }}>
-      <section style={{ textAlign: "center", marginBottom: 32 }}>
-        <h1 className="title" style={{ fontSize: "2.6rem", marginBottom: 8 }}>
-          🎲 Arcade Games
-        </h1>
-        <p className="description" style={{ maxWidth: 620, margin: "0 auto", color: "var(--text-secondary)" }}>
-          Welcome to MiniMayhem Arcade! Dive into a world of quick and addictive browser games. Select a game below,
-          or let fate pick for you.
-        </p>
-        <button
-          className="btn btn-large"
+    <div className="games-page" style={{ maxWidth: 950, margin: "0 auto", paddingBottom: 44 }}>
+      <header style={headerStyle}>
+        <div
           style={{
-            marginTop: 18,
-            fontWeight: 600,
-            background: "linear-gradient(92deg,#ff6347 0%,#FFD600 100%)",
-            color: "#23201e",
-            letterSpacing: 0.5,
-            border: "none",
-            borderRadius: 6,
-            boxShadow: "0 2px 14px #ffd60060",
-            cursor: "pointer",
-            fontSize: 18,
-            padding: "13px 34px",
-            transition: "background 0.18s, box-shadow 0.21s"
+            fontSize: 41,
+            fontWeight: 800,
+            fontFamily: "'Press Start 2P', 'Orbitron', sans-serif",
+            color: "#FFD600",
+            letterSpacing: 1.2,
+            textShadow: "0 0 18px #fff74596"
           }}
-          onClick={handleSurpriseMe}
         >
-          🎰 Surprise Me!
-        </button>
-      </section>
+          🕹️ MiniMayhem Arcade
+        </div>
+        <div style={subheaderStyle}>
+          Choose Your Game
+        </div>
+      </header>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-          gap: 28,
-          maxWidth: 950,
-          margin: "0 auto",
-        }}
-      >
-        {GAME_LIST.map((game) => (
-          <div
-            key={game.key}
+      <div style={gameGridStyle} data-testid="games-grid">
+        {GAMES.map((g, i) => (
+          <a
+            key={g.route}
+            href={g.route}
             style={{
-              padding: "27px 18px 21px 18px",
-              background: "linear-gradient(113deg, #232949 0%, #173d83 100%)",
-              borderRadius: 11,
-              boxShadow: "0 3px 14px #0004, 0 1.5px 12px #2196f329",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "flex-start",
-              minHeight: 200,
-              transition: "box-shadow 0.18s, transform 0.15s",
+              ...gameCardStyle,
             }}
+            tabIndex={0}
+            aria-label={g.name + " - " + g.description}
+            className="game-card"
           >
-            <span style={{ fontSize: 38, marginBottom: 16 }}>{game.emoji}</span>
-            <h3 style={{ fontWeight: 700, fontSize: 23, margin: "0 0 7px 0", color: "#ffda73" }}>{game.title}</h3>
-            <p style={{ color: "#fffbe7", fontSize: 15, lineHeight: 1.5, margin: 0, textAlign: "center" }}>
-              {game.description}
-            </p>
-            <button
-              className="btn"
-              style={{
-                marginTop: 16,
-                padding: "9px 21px",
-                fontWeight: 600,
-                fontSize: 15,
-                background: "linear-gradient(93deg,#00ffc2 10%,#46c5ff 95%)",
-                color: "#233",
-                border: "none",
-                borderRadius: 5,
-              }}
-              onClick={() => navigate(`/games/${game.key}`)}
-            >
-              Play
-            </button>
-          </div>
+            <div style={{ fontSize: 44, marginBottom: 9 }}>{g.emoji}</div>
+            <strong style={{ fontSize: 20 }}>{g.name}</strong>
+            <div style={{ fontSize: 13, color: "#fffbeecc", marginTop: 10 }}>{g.description}</div>
+          </a>
         ))}
       </div>
+
+      {/* "Surprise Me" Button */}
+      <button
+        style={btnSurprise}
+        type="button"
+        onClick={handleSurprise}
+        data-testid="surprise-btn"
+        onMouseDown={e => (e.currentTarget.style.transform = "scale(0.96)")}
+        onMouseUp={e => (e.currentTarget.style.transform = "")}
+        onMouseLeave={e => (e.currentTarget.style.transform = "")}
+      >
+        🎲 Surprise Me
+      </button>
     </div>
   );
 }
