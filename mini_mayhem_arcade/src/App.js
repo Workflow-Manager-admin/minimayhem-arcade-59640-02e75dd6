@@ -7,6 +7,7 @@ import Navbar from './Navbar';
 import BlockPuzzleGame from './BlockPuzzleGame';
 import MemoryMatchGame from './MemoryMatchGame';
 import MemoryPuzzleGame from './MemoryPuzzleGame';
+import ReactionSpeedGame from './ReactionSpeedGame';
 // PUBLIC_INTERFACE
 /**
  * Main application container for MiniMayhem Arcade.
@@ -24,6 +25,7 @@ function App() {
           <Route path="/games/block-puzzle" element={<BlockPuzzleGame />} />
           <Route path="/games/memory-match" element={<MemoryMatchGame />} />
           <Route path="/games/memory-puzzle" element={<MemoryPuzzleGame />} />
+          <Route path="/games/reaction-speed" element={<ReactionSpeedGame />} />
           {/* Future: more routes, e.g., <Route path="/top-games" element={<TopGamesPage />} /> */}
         </Routes>
       </div>
