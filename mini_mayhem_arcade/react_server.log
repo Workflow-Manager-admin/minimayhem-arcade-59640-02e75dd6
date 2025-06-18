@@ -11,8 +11,8 @@ asset bundle.js 1.85 MiB [emitted] (name: main)
 asset index.html 1.98 KiB [emitted]
 runtime modules 28.7 KiB 15 modules
 modules by path ./node_modules/ 1.54 MiB 34 modules
-modules by path ./src/ 115 KiB
-  modules by path ./src/*.js 108 KiB 7 modules
+modules by path ./src/ 118 KiB
+  modules by path ./src/*.js 110 KiB 7 modules
   modules by path ./src/*.css 7.49 KiB
     ./src/index.css 2.23 KiB [built] [code generated]
     + 3 modules
@@ -22,54 +22,36 @@ modules by path ./.ve/ 15.1 KiB
     ./.ve/EditorOverlay.css 2.25 KiB [built] [code generated]
     ./node_modules/css-loader/dist/cjs.js!./.ve/EditorOverlay.css 697 bytes [built] [code generated]
   ./.ve/EditorOverlay.jsx 1.58 KiB [built] [code generated]
-webpack 5.99.9 compiled successfully in 1482 ms
+webpack 5.99.9 compiled successfully in 1576 ms
 assets by status 1.98 KiB [cached] 1 asset
-assets by path *.js 1.88 MiB
-  asset bundle.js 1.85 MiB [emitted] (name: main)
-  asset main.8942e90dacbe4d7253f0.hot-update.js 31.6 KiB [emitted] [immutable] [hmr] (name: main)
-asset main.8942e90dacbe4d7253f0.hot-update.json 28 bytes [emitted] [immutable] [hmr]
-Entrypoint main 1.88 MiB = bundle.js 1.85 MiB main.8942e90dacbe4d7253f0.hot-update.js 31.6 KiB
-cached modules 1.64 MiB [cached] 49 modules
+assets by path *.js 1.93 MiB
+  asset bundle.js 1.89 MiB [emitted] (name: main)
+  asset main.ba67e20c2876d4d7743a.hot-update.js 39.5 KiB [emitted] [immutable] [hmr] (name: main)
+asset main.ba67e20c2876d4d7743a.hot-update.json 28 bytes [emitted] [immutable] [hmr]
+Entrypoint main 1.93 MiB = bundle.js 1.89 MiB main.ba67e20c2876d4d7743a.hot-update.js 39.5 KiB
+cached modules 1.67 MiB [cached] 49 modules
 runtime modules 28.7 KiB 15 modules
-./src/MemoryMatchGame.js 25.4 KiB [built] [code generated]
-webpack 5.99.9 compiled successfully in 205 ms
-assets by status 1.98 KiB [cached] 1 asset
-assets by path *.js 1.89 MiB
-  asset bundle.js 1.85 MiB [emitted] (name: main)
-  asset main.e9e9f3e9612323f49b5c.hot-update.js 32.1 KiB [emitted] [immutable] [hmr] (name: main)
-asset main.e9e9f3e9612323f49b5c.hot-update.json 28 bytes [emitted] [immutable] [hmr]
-Entrypoint main 1.89 MiB = bundle.js 1.85 MiB main.e9e9f3e9612323f49b5c.hot-update.js 32.1 KiB
-cached modules 1.64 MiB [cached] 49 modules
-runtime modules 28.7 KiB 15 modules
-./src/MemoryMatchGame.js 25.9 KiB [built] [code generated]
-webpack 5.99.9 compiled successfully in 116 ms
+javascript modules 29.9 KiB
+  ./src/App.js 2.02 KiB [built] [code generated]
+  ./src/MemoryPuzzleGame.js 27.9 KiB [built] [code generated]
+webpack 5.99.9 compiled successfully in 105 ms
 assets by status 1.98 KiB [cached] 1 asset
 assets by path *.js 1.89 MiB
-  asset bundle.js 1.85 MiB [emitted] (name: main)
-  asset main.f533e5e8a4db3ce20971.hot-update.js 32.1 KiB [emitted] [immutable] [hmr] (name: main)
-asset main.f533e5e8a4db3ce20971.hot-update.json 28 bytes [emitted] [immutable] [hmr]
-Entrypoint main 1.89 MiB = bundle.js 1.85 MiB main.f533e5e8a4db3ce20971.hot-update.js 32.1 KiB
-cached modules 1.64 MiB [cached] 49 modules
+  asset bundle.js 1.89 MiB [emitted] (name: main)
+  asset main.0659da67783acaa19eec.hot-update.js 6.29 KiB [emitted] [immutable] [hmr] (name: main)
+asset main.0659da67783acaa19eec.hot-update.json 28 bytes [emitted] [immutable] [hmr]
+Entrypoint main 1.89 MiB = bundle.js 1.89 MiB main.0659da67783acaa19eec.hot-update.js 6.29 KiB
+cached modules 1.69 MiB [cached] 50 modules
 runtime modules 28.7 KiB 15 modules
-./src/MemoryMatchGame.js 25.9 KiB [built] [code generated]
-webpack 5.99.9 compiled successfully in 102 ms
+./src/App.js 2.25 KiB [built] [code generated]
+webpack 5.99.9 compiled successfully in 41 ms
 assets by status 1.98 KiB [cached] 1 asset
-assets by path *.js 1.88 MiB
-  asset bundle.js 1.85 MiB [emitted] (name: main)
-  asset main.26ce0f419f9a28b36511.hot-update.js 31.4 KiB [emitted] [immutable] [hmr] (name: main)
-asset main.26ce0f419f9a28b36511.hot-update.json 28 bytes [emitted] [immutable] [hmr]
-Entrypoint main 1.88 MiB = bundle.js 1.85 MiB main.26ce0f419f9a28b36511.hot-update.js 31.4 KiB
-cached modules 1.64 MiB [cached] 49 modules
+assets by path *.js 1.92 MiB
+  asset bundle.js 1.89 MiB [emitted] (name: main)
+  asset main.44cbd1282fae1272785f.hot-update.js 32.8 KiB [emitted] [immutable] [hmr] (name: main)
+asset main.44cbd1282fae1272785f.hot-update.json 28 bytes [emitted] [immutable] [hmr]
+Entrypoint main 1.92 MiB = bundle.js 1.89 MiB main.44cbd1282fae1272785f.hot-update.js 32.8 KiB
+cached modules 1.67 MiB [cached] 50 modules
 runtime modules 28.7 KiB 15 modules
-./src/MemoryMatchGame.js 25.2 KiB [built] [code generated]
-webpack 5.99.9 compiled successfully in 146 ms
-assets by status 1.98 KiB [cached] 1 asset
-assets by path *.js 1.89 MiB
-  asset bundle.js 1.85 MiB [emitted] (name: main)
-  asset main.c29dad2d513ca4b774f3.hot-update.js 32.5 KiB [emitted] [immutable] [hmr] (name: main)
-asset main.c29dad2d513ca4b774f3.hot-update.json 28 bytes [emitted] [immutable] [hmr]
-Entrypoint main 1.89 MiB = bundle.js 1.85 MiB main.c29dad2d513ca4b774f3.hot-update.js 32.5 KiB
-cached modules 1.64 MiB [cached] 49 modules
-runtime modules 28.7 KiB 15 modules
-./src/MemoryMatchGame.js 26.2 KiB [built] [code generated]
-webpack 5.99.9 compiled successfully in 114 ms
+./src/ArcadeGamesPage.js 26.7 KiB [built] [code generated]
+webpack 5.99.9 compiled successfully in 105 ms

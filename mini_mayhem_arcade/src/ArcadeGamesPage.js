@@ -324,6 +324,15 @@ const ARCADE_GAMES = [
     bg: "linear-gradient(120deg,#114fb4 40%,#43e9ff 85%)",
   },
   {
+    key: "memory-puzzle",
+    title: "Memory Puzzle",
+    desc: "Match pairs in a challenging arcade-style memory puzzle. Select your difficulty!",
+    icon: "🟥",
+    route: "/games/memory-puzzle",
+    color: "#FFD600",
+    bg: "linear-gradient(120deg,#ffd600 40%,#43e9ff 90%)",
+  },
+  {
     key: "memory-match",
     title: "Memory Match",
     desc: "Flip and match cards. How sharp is your memory? Find out now!",
