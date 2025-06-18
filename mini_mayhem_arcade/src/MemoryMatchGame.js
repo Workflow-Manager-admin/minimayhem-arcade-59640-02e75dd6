@@ -428,10 +428,34 @@ const MemoryMatchGame = () => {
                       color: "inherit",
                       boxShadow: "none",
                       userSelect: "none",
+                      // Ensure emoji is not shrunk/invisible if font unavailable
+                      minWidth: 0,
+                      minHeight: 0,
+                      overflow: "visible", // allow emoji to display fully
                     }}
                     aria-hidden={!isFlipped}
                   >
-                    {card.emoji}
+                    <span
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontFamily:
+                          "Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji, Android Emoji, EmojiOne Mozilla, sans-serif",
+                        fontSize: emojiFont,
+                        lineHeight: 1.11,
+                        fontWeight: "normal",
+                        // extra safety for symbol visibility:
+                        overflow: "visible",
+                        background: "none",
+                        color: "inherit",
+                      }}
+                      aria-hidden="true"
+                    >
+                      {card.emoji}
+                    </span>
                   </span>
                 ) : (
                   // Card back (arcade style – use a card-back tile emoji or Unicode)
