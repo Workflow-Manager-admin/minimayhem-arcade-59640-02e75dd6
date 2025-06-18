@@ -1,212 +1,151 @@
-/* ArcadeNavBar.css: Pixel arcade theme for MiniMayhem Arcade navbar */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap');
 
-/* Attempt to load a classic arcade/pixel font */
-@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
-
-.arcade-navbar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  z-index: 1000;
-  background: #263fff; /* Royal Blue */
-  border-bottom: 4px solid #ffd700; /* Arcade gold trim */
-  font-family: 'Press Start 2P', Arial, monospace, sans-serif;
-  box-shadow: 0 3px 12px rgba(0,0,60,0.15);
-  min-height: 60px;
-  transition: box-shadow 0.15s;
+/* Arcade Neon/Retro Theme Variables */
+:root {
+  --arcade-gradient: linear-gradient(90deg, #0f0c29 0%, #302b63 35%, #ff00cc 100%);
+  --arcade-glow: 0 0 10px #39ff14,0 0 20px #25c6fc,0 0 30px #ff00cc,0 0 40px #39ff14,0 0 70px #25c6fc;
+  --arcade-font: 'Orbitron', 'Arial Black', cursive, sans-serif;
+  --arcade-link: #fff;
+  --arcade-link-glow: #00ffd5;
+  --arcade-active: #ff00cc;
+  --arcade-hover: #39ff14;
+  --arcade-navbar-height: 62px;
 }
 
-.arcade-navbar-content {
+/* Main nav bar container */
+.arcade-navbar {
+  width: 100%;
+  height: var(--arcade-navbar-height);
+  background: var(--arcade-gradient);
+  box-shadow: 0 2px 15px 0 #000c, 0 1.5px 0.5px 0 #ff27e6c0 inset;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  max-width: 1350px;
-  margin: 0 auto;
-  padding: 0 20px;
-  height: 60px;
+  font-family: var(--arcade-font);
+  padding: 0 2rem;
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  /* For neon border at bottom */
+  border-bottom: 3px solid #ff00cc;
 }
 
-/* Left: Logo/Title */
-.arcade-logo-title {
+.arcade-navbar__logo-title {
   display: flex;
   align-items: center;
+  gap: 0.7rem;
 }
-.arcade-logo-link {
+
+.arcade-navbar__emoji {
+  font-size: 2.2rem;
+  filter: drop-shadow(0 0 6px #00ffd4) drop-shadow(0 0 1px #fff);
+  line-height: 1;
+  margin-top: 1px;
+}
+
+.arcade-navbar__brand-title {
+  font-family: inherit;
+  font-size: 1.62rem;
+  letter-spacing: 2px;
+  font-weight: 700;
   color: #fff;
-  text-decoration: none;
-  font-family: 'Press Start 2P', monospace;
-  font-size: 15px;
-  letter-spacing: 1px;
-  font-weight: bold;
-  outline: none;
+  text-shadow: 0 0 5px #ff00cc, 0 0 15px #00ffd5, 0 0 3px #fff;
+  /* bit of glow */
+}
+
+/* Links container */
+.arcade-navbar__links {
   display: flex;
+  gap: 1.6rem;
   align-items: center;
-  transition: color 0.18s, text-shadow 0.18s;
-}
-.arcade-logo-link:focus,
-.arcade-logo-link:hover {
-  color: #ffd700;
-  text-shadow: 0 1px 6px #222, 0 0 2px #ffd700;
-}
-.arcade-emoji {
-  font-size: 1.3em;
-  margin-right: 8px;
-  filter: drop-shadow(0 1px 0 #222);
-  user-select: none;
-}
-.arcade-title-text {
-  background: linear-gradient(90deg, #ffe066 35%, #fff700 60%, #fffde0 100%);
-  color: #fdf566;
-  padding: 3px 8px 2px 4px;
-  border-radius: 5px 18px 18px 5px/6px 16px 16px 6px;
-  margin-right: 0.25em;
-  font-size: 1.08em;
-  letter-spacing: 1.2px;
-  box-shadow: 0 1px 6px #20208055;
+  flex-wrap: wrap;
 }
 
-/* Hamburger (mobile only) */
-.arcade-navbar-hamburger {
-  background: transparent;
-  border: none;
-  display: none;
-  cursor: pointer;
-  flex-direction: column;
-  justify-content: center;
-  gap: 5px;
-  height: 40px;
-  width: 48px;
-  margin-left: 15px;
-  z-index: 1011;
-}
-
-.arcade-navbar-hamburger-bar {
-  width: 28px;
-  height: 4px;
-  background: #ffd700;
-  border-radius: 2px;
-  margin: 2.5px 0;
-  transition: all 0.24s cubic-bezier(0.4,1.4,0.5,1);
-  display: block;
-}
-.arcade-navbar-hamburger.open .arcade-navbar-hamburger-bar:nth-child(1) {
-  transform: translateY(8px) rotate(45deg);
-}
-.arcade-navbar-hamburger.open .arcade-navbar-hamburger-bar:nth-child(2) {
-  opacity: 0;
-}
-.arcade-navbar-hamburger.open .arcade-navbar-hamburger-bar:nth-child(3) {
-  transform: translateY(-8px) rotate(-45deg);
-}
-
-/* Right: Nav Links */
-.arcade-navbar-links {
-  display: flex;
-  gap: 2.5em;
-  align-items: center;
-}
-
-.arcade-nav-link {
-  color: #fff;
-  background: transparent;
-  font-family: 'Press Start 2P', monospace;
-  font-weight: bold;
-  font-size: 13px;
+/* Nav Links Base Styles */
+.arcade-navbar__link {
+  font-family: var(--arcade-font);
+  font-size: 1.09rem;
   text-transform: uppercase;
-  text-decoration: none;
-  letter-spacing: 1.2px;
-  padding: 5px 0 2px 0;
+  color: var(--arcade-link);
+  padding: 0.42em 1.1em;
+  border-radius: 8px;
+  letter-spacing: 1.5px;
+  transition:
+    color 0.14s,
+    background 0.14s,
+    box-shadow 0.16s,
+    transform 0.13s cubic-bezier(.25,1.7,.33,.99),
+    text-shadow 0.13s;
+  text-shadow:
+    0 0 7px #00ffd5,
+    0 0 2px #fff;
+  border: 2px solid transparent;
+  position: relative;
   outline: none;
-  border-bottom: 2.5px solid transparent;
-  transition: 
-    color 0.15s,
-    border-bottom 0.15s,
-    background 0.15s,
-    box-shadow 0.13s;
-  margin: 0 2px;
+  cursor: pointer;
+  box-shadow: none;
 }
 
-.arcade-nav-link:hover,
-.arcade-nav-link:focus {
-  color: #ffd700;
-  border-bottom: 2.5px solid #ffd700;
-  background: #1833b9;
-  box-shadow: 0 0 6px #ffd700bb;
-  text-shadow: 1px 1px 4px #151515;
+.arcade-navbar__link:active {
+  /* pop in/arcade press feedback */
+  background: rgba(255, 0, 204, 0.18);
+  color: #fff;
+  box-shadow: 0 0 16px #ff00cc;
+  transform: scale(0.97);
+  text-shadow: 0 0 9px #ff00cc;
 }
 
-.arcade-nav-link.active, 
-.arcade-nav-link.active:focus {
-  color: #fff700;
-  border-bottom: 2.5px solid #fff700;
-  background: #11247a;
-  text-shadow: 0 2px 8px #151531;
-  box-shadow: 0 1px 7px #ffe588cc;
+/* Hover/Focus = neon green and more glow + "press" feedback */
+.arcade-navbar__link:hover,
+.arcade-navbar__link:focus-visible {
+  color: var(--arcade-hover);
+  background: rgba(57, 255, 20, 0.10);
+  box-shadow: 0 0 18px #39ff14, 0 0 9px #00ffd4;
+  outline: none;
+  text-shadow:
+    0 0 14px #39ff14,
+    0 0 2px #fff,
+    0 0 2px #00ffd5;
+  transform: scale(1.07) rotate(-1deg);
+  border: 2px solid #00ffd5;
+  z-index: 2;
 }
 
-/* Responsive styles */
-@media (max-width: 740px) {
-  .arcade-navbar-content {
-    padding: 0 7px;
-    min-height: 48px;
-    height: 52px;
-  }
-  .arcade-navbar-links {
-    gap: 0.8em;
-  }
-  .arcade-title-text {
-    font-size: 0.98em;
-    padding: 2px 4px;
-  }
+/* Active link = pink underline, bright and glowing */
+.arcade-navbar__link--active,
+.arcade-navbar__link.active {
+  color: var(--arcade-active);
+  text-shadow: 0 0 15px #ff00cc, 0 0 4px #fff, 0 0 6px #ff00cc;
+  border-bottom: 3px solid var(--arcade-active);
+  box-shadow:
+    0 0 20px #ff00ccad,
+    0 0 4px #ff00cc;
+  background: rgba(255, 0, 204, 0.08);
+  z-index: 2;
+  position: relative;
 }
 
-@media (max-width: 580px) {
-  .arcade-navbar-content {
-    flex-direction: row;
-    align-items: stretch;
-    min-height: 44px;
-    height: 46px;
-    padding: 0 2.2vw;
-  }
-
-  .arcade-navbar-links {
-    position: absolute;
-    right: 13px;
-    top: 60px;
-    background: #2237c7;
-    border: 2px solid #ffd700;
-    border-radius: 0 0 12px 12px;
-    box-shadow: 0 7px 26px #11247a44;
+/* Responsive: stack/space nav links at mobile, keep always visible */
+@media (max-width: 700px) {
+  .arcade-navbar {
     flex-direction: column;
-    align-items: flex-end;
-    padding: 17px 0 9px 0;
-    gap: 0.6em;
-    opacity: 0;
-    pointer-events: none;
-    transform: translateY(-17px) scale(0.98);
-    transition: opacity 0.2s, transform 0.2s;
-    z-index: 1012;
-    min-width: 138px;
-    width: max-content;
+    height: auto;
+    padding: 1rem 0.8rem 0.4rem 0.8rem;
+    gap: 0.5rem;
   }
-  .arcade-navbar-links.show {
-    opacity: 1;
-    pointer-events: auto;
-    transform: translateY(0) scale(1);
+  .arcade-navbar__logo-title {
+    justify-content: flex-start;
+    width: 100%;
+    margin-bottom: 0.3rem;
   }
-  .arcade-navbar-hamburger {
-    display: flex;
+  .arcade-navbar__links {
+    justify-content: flex-start;
+    width: 100%;
+    gap: 0.9rem;
   }
 }
 
-/* Ensure content does not go under navbar */
-body, .app {
-  padding-top: 60px;
-}
-
-@media (max-width: 740px) {
-  body, .app {
-    padding-top: 52px;
-  }
+/* Ensure links are always visible and wrap if needed */
+.arcade-navbar__links {
+  flex-wrap: wrap;
 }

@@ -1,64 +1,54 @@
-import React, { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import React from "react";
+import { NavLink } from "react-router-dom";
 import "./ArcadeNavBar.css";
 
 // PUBLIC_INTERFACE
 /**
- * ArcadeNavBar - Fixed arcade-style navigation bar for MiniMayhem Arcade.
- * Structure: logo/title on left (links to "/"), Games and Top Games on right,
- * arcade pixel font, and bright royal blue background.
- * Responsive: On narrow screens, menu collapses to hamburger.
+ * Main top navigation bar for MiniMayhem Arcade.
+ * Arcade style: gradient, neon glow, retro font from Google Fonts, always-visible links.
+ * Left: Logo/title (🎮 emoji) + brand
+ * Right: Navigation links
  */
 function ArcadeNavBar() {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const location = useLocation();
-
-  // Close nav on link click (for mobile)
-  const handleNavLinkClick = () => setMenuOpen(false);
-
   return (
     <nav className="arcade-navbar">
-      <div className="arcade-navbar-content">
-        {/* Left: Logo/Title */}
-        <div className="arcade-logo-title">
-          <Link to="/" className="arcade-logo-link" tabIndex={0} aria-label="Home">
-            <span role="img" aria-label="Arcade Joystick" className="arcade-emoji">🎮</span>
-            <span className="arcade-title-text">MiniMayhem Arcade</span>
-          </Link>
-        </div>
-        {/* Hamburger for small screens */}
-        <button
-          className={`arcade-navbar-hamburger${menuOpen ? " open" : ""}`}
-          aria-label="Open navigation menu"
-          aria-expanded={menuOpen}
-          aria-controls="arcade-navbar-links"
-          onClick={() => setMenuOpen((v) => !v)}
+      <div className="arcade-navbar__logo-title">
+        <span className="arcade-navbar__emoji" role="img" aria-label="game controller">
+          🎮
+        </span>
+        <span className="arcade-navbar__brand-title">
+          MiniMayhem Arcade
+        </span>
+      </div>
+      <div className="arcade-navbar__links">
+        <NavLink
+          to="/"
+          className={({ isActive }) =>
+            "arcade-navbar__link" +
+            (isActive ? " arcade-navbar__link--active" : "")
+          }
+          end
         >
-          <span className="arcade-navbar-hamburger-bar"></span>
-          <span className="arcade-navbar-hamburger-bar"></span>
-          <span className="arcade-navbar-hamburger-bar"></span>
-        </button>
-        {/* Right: Nav Links */}
-        <div
-          id="arcade-navbar-links"
-          className={`arcade-navbar-links${menuOpen ? " show" : ""}`}
-          onClick={handleNavLinkClick}
+          Home
+        </NavLink>
+        <NavLink
+          to="/games"
+          className={({ isActive }) =>
+            "arcade-navbar__link" +
+            (isActive ? " arcade-navbar__link--active" : "")
+          }
         >
-          <Link
-            to="/games"
-            className={`arcade-nav-link${location.pathname.startsWith("/games") ? " active" : ""}`}
-            tabIndex={0}
-          >
-            Games
-          </Link>
-          <Link
-            to="/top-games"
-            className={`arcade-nav-link${location.pathname === "/top-games" ? " active" : ""}`}
-            tabIndex={0}
-          >
-            Top Games
-          </Link>
-        </div>
+          Games
+        </NavLink>
+        <NavLink
+          to="/top-games"
+          className={({ isActive }) =>
+            "arcade-navbar__link" +
+            (isActive ? " arcade-navbar__link--active" : "")
+          }
+        >
+          Top Games
+        </NavLink>
       </div>
     </nav>
   );

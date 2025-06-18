@@ -22,7 +22,11 @@ import TopGamesPage from './TopGamesPage'; // Import TopGamesPage
 function App() {
   return (
     <BrowserRouter>
-      <div className="app">
+      <div
+        className="app"
+        style={{
+          color: '#ffffff'
+        }}>
         <ArcadeNavBar />
         <Routes>
           <Route path="/" element={<LandingPage />} />
